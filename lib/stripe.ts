@@ -26,6 +26,7 @@ export const startCheckout = async () => {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${session.access_token}`,
+        'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -69,6 +70,7 @@ export const openPortal = async () => {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${session.access_token}`,
+        'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
