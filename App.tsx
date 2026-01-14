@@ -371,6 +371,54 @@ const App: React.FC = () => {
                 email: profileResponse.data.email,
                 phone: profileResponse.data.phone
             });
+
+            // Handle daily reset logic
+            const today = new Date().toISOString().split('T')[0]; // Get YYYY-MM-DD format
+            const lastVisit = profileResponse.data.last_visit_date;
+
+            if (lastVisit !== today) {
+                // New day - reset daily tokens and update streak
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+                let newStreak = profileResponse.data.streak || 0;
+
+                if (lastVisit === yesterdayStr) {
+                    // Consecutive day - increment streak
+                    newStreak = newStreak + 1;
+                } else if (lastVisit) {
+                    // Missed a day - reset streak
+                    newStreak = 1;
+                } else {
+                    // First visit ever
+                    newStreak = 1;
+                }
+
+                // Update database with reset values
+                const { error: updateError } = await supabase
+                    .from('profiles')
+                    .update({
+                        daily_tokens: 0,
+                        streak: newStreak,
+                        last_visit_date: today
+                    })
+                    .eq('id', user.id);
+
+                if (updateError) {
+                    console.error("Error updating daily reset:", updateError);
+                }
+
+                // Update local state
+                setDailyTokens(0);
+                setStreak(newStreak);
+                setBonusCredits(profileResponse.data.bonus_credits || 0);
+            } else {
+                // Same day - load existing values
+                setDailyTokens(profileResponse.data.daily_tokens || 0);
+                setBonusCredits(profileResponse.data.bonus_credits || 0);
+                setStreak(profileResponse.data.streak || 0);
+            }
         }
     } catch (error) {
         console.error("Error fetching data:", error);
@@ -507,12 +555,30 @@ const App: React.FC = () => {
       return false;
   };
 
-  const incrementTokenUsage = () => {
+  const incrementTokenUsage = async () => {
       if (userTier === 'pro') return;
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
       if (dailyTokens < 5) {
-          setDailyTokens(prev => prev + 1);
+          const newDailyTokens = dailyTokens + 1;
+          setDailyTokens(newDailyTokens);
+
+          // Persist to database
+          await supabase
+              .from('profiles')
+              .update({ daily_tokens: newDailyTokens })
+              .eq('id', user.id);
       } else if (bonusCredits > 0) {
-          setBonusCredits(prev => prev - 1);
+          const newBonusCredits = bonusCredits - 1;
+          setBonusCredits(newBonusCredits);
+
+          // Persist to database
+          await supabase
+              .from('profiles')
+              .update({ bonus_credits: newBonusCredits })
+              .eq('id', user.id);
       }
   };
 
