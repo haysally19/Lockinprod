@@ -1,0 +1,24 @@
+{
+  "name": "Lockin AI",
+  "short_name": "Lockin",
+  "description": "AI-powered study assistant for students",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/gemini_generated_image_iqcvyeiqcvyeiqcv.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/gemini_generated_image_iqcvyeiqcvyeiqcv.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}
