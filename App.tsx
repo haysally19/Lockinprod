@@ -251,19 +251,16 @@ const App: React.FC = () => {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('success') === 'true') {
-        setUserTier('pro');
-        localStorage.setItem('lockin_tier', 'pro');
-        
-        // Persist to Supabase if possible
-        supabase.auth.updateUser({
-            data: { tier: 'pro' }
-        }).catch(err => console.error("Failed to sync tier to DB", err));
+        alert("Payment successful! Your upgrade is being processed. Please refresh in a moment to see your Pro features.");
 
-        alert("🎉 Upgrade Successful! Welcome to Lockin AI Pro.");
-        
         // Clean URL
         const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
         window.history.replaceState({path:newUrl},'',newUrl);
+
+        // Refresh data to get updated tier from database
+        setTimeout(() => {
+            window.location.reload();
+        }, 2000);
     }
   }, []);
 
@@ -280,11 +277,6 @@ const App: React.FC = () => {
       if (session) {
           setCurrentUserEmail(session.user.email);
           fetchData();
-          // Check if DB has tier data to sync local state
-          if (session.user.user_metadata?.tier === 'pro') {
-              setUserTier('pro');
-              localStorage.setItem('lockin_tier', 'pro');
-          }
       } else {
           setLoading(false);
       }
@@ -298,10 +290,6 @@ const App: React.FC = () => {
       if (session) {
           setCurrentUserEmail(session.user.email);
           fetchData();
-          if (session.user.user_metadata?.tier === 'pro') {
-              setUserTier('pro');
-              localStorage.setItem('lockin_tier', 'pro');
-          }
       }
     });
 
@@ -371,6 +359,13 @@ const App: React.FC = () => {
                 email: profileResponse.data.email,
                 phone: profileResponse.data.phone
             });
+
+            // Sync tier from database
+            const dbTier = profileResponse.data.tier || 'free';
+            if (dbTier !== userTier) {
+                setUserTier(dbTier as 'free' | 'pro');
+                localStorage.setItem('lockin_tier', dbTier);
+            }
 
             // Handle daily reset logic
             const today = new Date().toISOString().split('T')[0]; // Get YYYY-MM-DD format
@@ -597,13 +592,18 @@ const App: React.FC = () => {
       }
   };
 
-  const onDowngrade = () => {
+  const onDowngrade = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Update profiles table
+      await supabase
+          .from('profiles')
+          .update({ tier: 'free' })
+          .eq('id', user.id);
+
       setUserTier('free');
       localStorage.setItem('lockin_tier', 'free');
-      // Update DB
-      supabase.auth.updateUser({
-            data: { tier: 'free' }
-      }).catch(console.error);
   }
   
   if (loading) {

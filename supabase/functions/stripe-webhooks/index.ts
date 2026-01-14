@@ -51,7 +51,7 @@ Deno.serve(async (req: Request) => {
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
-        
+
         if (session.subscription) {
           const subscription = await stripe.subscriptions.retrieve(
             session.subscription as string
@@ -74,13 +74,23 @@ Deno.serve(async (req: Request) => {
             cancel_at_period_end: subscription.cancel_at_period_end,
             updated_at: new Date().toISOString(),
           });
+
+          // Update user profile tier to pro
+          if (subscription.status === 'active' || subscription.status === 'trialing') {
+            await supabase
+              .from('profiles')
+              .update({ tier: 'pro' })
+              .eq('id', userId);
+
+            console.log(`Updated user ${userId} to pro tier`);
+          }
         }
         break;
       }
 
       case 'customer.subscription.updated': {
         const subscription = event.data.object as Stripe.Subscription;
-        
+
         await supabase
           .from('subscriptions')
           .update({
@@ -92,12 +102,29 @@ Deno.serve(async (req: Request) => {
             updated_at: new Date().toISOString(),
           })
           .eq('stripe_subscription_id', subscription.id);
+
+        // Update profile tier based on subscription status
+        const { data: subData } = await supabase
+          .from('subscriptions')
+          .select('user_id')
+          .eq('stripe_subscription_id', subscription.id)
+          .maybeSingle();
+
+        if (subData?.user_id) {
+          const newTier = (subscription.status === 'active' || subscription.status === 'trialing') ? 'pro' : 'free';
+          await supabase
+            .from('profiles')
+            .update({ tier: newTier })
+            .eq('id', subData.user_id);
+
+          console.log(`Updated user ${subData.user_id} tier to ${newTier}`);
+        }
         break;
       }
 
       case 'customer.subscription.deleted': {
         const subscription = event.data.object as Stripe.Subscription;
-        
+
         await supabase
           .from('subscriptions')
           .update({
@@ -105,6 +132,22 @@ Deno.serve(async (req: Request) => {
             updated_at: new Date().toISOString(),
           })
           .eq('stripe_subscription_id', subscription.id);
+
+        // Downgrade user to free tier
+        const { data: subData } = await supabase
+          .from('subscriptions')
+          .select('user_id')
+          .eq('stripe_subscription_id', subscription.id)
+          .maybeSingle();
+
+        if (subData?.user_id) {
+          await supabase
+            .from('profiles')
+            .update({ tier: 'free' })
+            .eq('id', subData.user_id);
+
+          console.log(`Downgraded user ${subData.user_id} to free tier`);
+        }
         break;
       }
 
