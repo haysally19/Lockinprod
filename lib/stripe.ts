@@ -9,8 +9,10 @@ export const startCheckout = async () => {
 
     if (!session) {
       alert('Please log in to subscribe');
-      return;
+      throw new Error('No session found');
     }
+
+    console.log('Starting checkout...');
 
     const response = await fetch(`${SUPABASE_URL}/functions/v1/create-checkout-session`, {
       method: 'POST',
@@ -21,20 +23,36 @@ export const startCheckout = async () => {
       },
     });
 
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Response error:', response.status, errorText);
+      alert(`Failed to start checkout: ${response.status}`);
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
     const data = await response.json();
+    console.log('Checkout response:', data);
 
     if (data.error) {
       console.error('Checkout error:', data.error);
-      alert('Failed to start checkout. Please try again.');
-      return;
+      alert(`Failed to start checkout: ${data.error}`);
+      throw new Error(data.error);
     }
 
     if (data.url) {
+      console.log('Redirecting to:', data.url);
       window.location.href = data.url;
+    } else {
+      console.error('No URL in response');
+      alert('No checkout URL received. Please try again.');
+      throw new Error('No checkout URL in response');
     }
   } catch (error) {
     console.error('Error starting checkout:', error);
-    alert('Failed to start checkout. Please try again.');
+    if (error instanceof Error && !error.message.includes('No session')) {
+      alert('Failed to start checkout. Please check the console for details.');
+    }
+    throw error;
   }
 };
 

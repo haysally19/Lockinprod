@@ -589,9 +589,12 @@ const App: React.FC = () => {
   };
 
   // Triggered when user attempts to pay inside the modal
-  const handlePaymentAttempt = () => {
-      // Call Stripe Checkout logic
-      startCheckout();
+  const handlePaymentAttempt = async () => {
+      try {
+          await startCheckout();
+      } catch (error) {
+          console.error('Checkout error:', error);
+      }
   };
 
   const onDowngrade = () => {
