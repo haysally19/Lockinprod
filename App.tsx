@@ -151,7 +151,7 @@ const MainLayout: React.FC<MainLayoutProps> = (props) => {
                 >
                     <Menu className="w-6 h-6" />
                 </button>
-                <div className="w-8">
+                <div className="w-12">
                     <Logo showText={false} />
                 </div>
                 <div className="w-10"></div>
