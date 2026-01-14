@@ -75,12 +75,19 @@ Deno.serve(async (req: Request) => {
             updated_at: new Date().toISOString(),
           });
 
-          // Update user profile tier to pro
           if (subscription.status === 'active' || subscription.status === 'trialing') {
+            const { data: user } = await supabase.auth.admin.getUserById(userId);
+
             await supabase
               .from('profiles')
-              .update({ tier: 'pro' })
-              .eq('id', userId);
+              .upsert({
+                id: userId,
+                email: user?.user?.email || '',
+                full_name: user?.user?.user_metadata?.full_name || user?.user?.email?.split('@')[0] || '',
+                tier: 'pro'
+              }, {
+                onConflict: 'id'
+              });
 
             console.log(`Updated user ${userId} to pro tier`);
           }
@@ -103,7 +110,6 @@ Deno.serve(async (req: Request) => {
           })
           .eq('stripe_subscription_id', subscription.id);
 
-        // Update profile tier based on subscription status
         const { data: subData } = await supabase
           .from('subscriptions')
           .select('user_id')
@@ -112,10 +118,18 @@ Deno.serve(async (req: Request) => {
 
         if (subData?.user_id) {
           const newTier = (subscription.status === 'active' || subscription.status === 'trialing') ? 'pro' : 'free';
+          const { data: user } = await supabase.auth.admin.getUserById(subData.user_id);
+
           await supabase
             .from('profiles')
-            .update({ tier: newTier })
-            .eq('id', subData.user_id);
+            .upsert({
+              id: subData.user_id,
+              email: user?.user?.email || '',
+              full_name: user?.user?.user_metadata?.full_name || user?.user?.email?.split('@')[0] || '',
+              tier: newTier
+            }, {
+              onConflict: 'id'
+            });
 
           console.log(`Updated user ${subData.user_id} tier to ${newTier}`);
         }
@@ -133,7 +147,6 @@ Deno.serve(async (req: Request) => {
           })
           .eq('stripe_subscription_id', subscription.id);
 
-        // Downgrade user to free tier
         const { data: subData } = await supabase
           .from('subscriptions')
           .select('user_id')
@@ -141,10 +154,18 @@ Deno.serve(async (req: Request) => {
           .maybeSingle();
 
         if (subData?.user_id) {
+          const { data: user } = await supabase.auth.admin.getUserById(subData.user_id);
+
           await supabase
             .from('profiles')
-            .update({ tier: 'free' })
-            .eq('id', subData.user_id);
+            .upsert({
+              id: subData.user_id,
+              email: user?.user?.email || '',
+              full_name: user?.user?.user_metadata?.full_name || user?.user?.email?.split('@')[0] || '',
+              tier: 'free'
+            }, {
+              onConflict: 'id'
+            });
 
           console.log(`Downgraded user ${subData.user_id} to free tier`);
         }
