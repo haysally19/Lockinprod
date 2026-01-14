@@ -1,33 +1,71 @@
-export const STRIPE_CONFIG = {
-  CHECKOUT_URL: import.meta.env.VITE_STRIPE_CHECKOUT_URL || '',
-  PORTAL_URL: import.meta.env.VITE_STRIPE_PORTAL_URL || ''
+import { supabase } from './supabase';
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+
+export const startCheckout = async () => {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (!session) {
+      alert('Please log in to subscribe');
+      return;
+    }
+
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/create-checkout-session`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${session.access_token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const data = await response.json();
+
+    if (data.error) {
+      console.error('Checkout error:', data.error);
+      alert('Failed to start checkout. Please try again.');
+      return;
+    }
+
+    if (data.url) {
+      window.location.href = data.url;
+    }
+  } catch (error) {
+    console.error('Error starting checkout:', error);
+    alert('Failed to start checkout. Please try again.');
+  }
 };
 
-export const startCheckout = (userEmail?: string) => {
-  if (!STRIPE_CONFIG.CHECKOUT_URL) {
-    console.warn("Stripe Checkout URL not configured");
-    alert("Stripe Configuration Missing:\nPlease add your STRIPE_CHECKOUT_URL in lib/stripe.ts");
-    return;
-  }
-  
-  let url = STRIPE_CONFIG.CHECKOUT_URL;
-  
-  // Append email to pre-fill the checkout form if provided
-  if (userEmail) {
-    const separator = url.includes('?') ? '&' : '?';
-    url = `${url}${separator}prefilled_email=${encodeURIComponent(userEmail)}`;
-  }
+export const openPortal = async () => {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
 
-  // Open checkout in new tab
-  window.open(url, '_self'); // Open in same tab for smoother flow
-};
+    if (!session) {
+      alert('Please log in to manage your subscription');
+      return;
+    }
 
-export const openPortal = () => {
-  if (!STRIPE_CONFIG.PORTAL_URL) {
-    console.warn("Stripe Portal URL not configured");
-    alert("Stripe Configuration Missing:\nPlease add your STRIPE_PORTAL_URL in lib/stripe.ts");
-    return;
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/create-portal-session`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${session.access_token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const data = await response.json();
+
+    if (data.error) {
+      console.error('Portal error:', data.error);
+      alert(data.error);
+      return;
+    }
+
+    if (data.url) {
+      window.open(data.url, '_blank');
+    }
+  } catch (error) {
+    console.error('Error opening portal:', error);
+    alert('Failed to open customer portal. Please try again.');
   }
-  // Open portal in new tab
-  window.open(STRIPE_CONFIG.PORTAL_URL, '_blank');
 };
