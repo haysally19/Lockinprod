@@ -25,7 +25,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ userTier, userProfile, onUp
   const totalCredits = creditsRemaining + bonusCredits;
 
   const formatBillingDate = (dateString: string | null) => {
-    if (!dateString) return 'Not available';
+    if (!dateString) return 'Loading...';
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   };
