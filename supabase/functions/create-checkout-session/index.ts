@@ -93,6 +93,7 @@ Deno.serve(async (req: Request) => {
         },
       ],
       mode: 'subscription',
+      allow_promotion_codes: true,
       success_url: `${req.headers.get('origin')}/dashboard?success=true`,
       cancel_url: `${req.headers.get('origin')}/dashboard?canceled=true`,
       metadata: {
