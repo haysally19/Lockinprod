@@ -7,11 +7,12 @@ interface DashboardProps {
   courses: Course[];
   streak: number;
   userTier: 'free' | 'pro';
+  tierLoaded?: boolean;
   onUpgrade: () => void;
   onAddCourse: () => void;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ courses, streak, userTier, onUpgrade, onAddCourse }) => {
+const Dashboard: React.FC<DashboardProps> = ({ courses, streak, userTier, tierLoaded = true, onUpgrade, onAddCourse }) => {
   const allAssignments = courses.flatMap(c => 
     c.assignments.map(a => ({ ...a, courseName: c.name, courseColor: c.color, courseId: c.id }))
   );
@@ -58,8 +59,8 @@ const Dashboard: React.FC<DashboardProps> = ({ courses, streak, userTier, onUpgr
           </div>
           
           <div className="flex items-center gap-2 w-full md:w-auto">
-            {userTier === 'free' && (
-              <button 
+            {tierLoaded && userTier === 'free' && (
+              <button
                 onClick={onUpgrade}
                 className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-white border border-slate-200 text-indigo-600 rounded-lg font-bold text-xs shadow-sm hover:shadow-md active:scale-95 transition-all"
               >

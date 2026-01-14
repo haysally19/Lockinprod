@@ -96,6 +96,7 @@ interface MainLayoutProps {
     courses: Course[];
     onAddCourse: () => void;
     userTier: 'free' | 'pro';
+    tierLoaded: boolean;
     userProfile: {
       full_name: string;
       email: string;
@@ -137,6 +138,7 @@ const MainLayout: React.FC<MainLayoutProps> = (props) => {
             courses={props.courses}
             onAddCourse={props.onAddCourse}
             userTier={props.userTier}
+            tierLoaded={props.tierLoaded}
             userProfile={props.userProfile}
             dailyTokens={props.dailyTokens}
             bonusCredits={props.bonusCredits}
@@ -160,7 +162,7 @@ const MainLayout: React.FC<MainLayoutProps> = (props) => {
 
             <div className="flex-1 overflow-hidden relative">
                 <Routes>
-                <Route path="/" element={<Dashboard courses={props.courses} streak={props.streak} userTier={props.userTier} onUpgrade={props.onUpgrade} onAddCourse={props.onAddCourse} />} />
+                <Route path="/" element={<Dashboard courses={props.courses} streak={props.streak} userTier={props.userTier} tierLoaded={props.tierLoaded} onUpgrade={props.onUpgrade} onAddCourse={props.onAddCourse} />} />
                 <Route 
                     path="/classes" 
                     element={
@@ -238,9 +240,8 @@ const App: React.FC = () => {
     phone: string | null;
   } | null>(null);
 
-  const [userTier, setUserTier] = useState<'free' | 'pro'>(() => {
-      return (localStorage.getItem('lockin_tier') as 'free' | 'pro') || 'free';
-  });
+  const [userTier, setUserTier] = useState<'free' | 'pro'>('free');
+  const [tierLoaded, setTierLoaded] = useState(false);
 
   const [dailyTokens, setDailyTokens] = useState<number>(0);
   const [bonusCredits, setBonusCredits] = useState<number>(0);
@@ -375,12 +376,10 @@ const App: React.FC = () => {
                 phone: profileResponse.data.phone
             });
 
-            // Sync tier from database
-            const dbTier = profileResponse.data.tier || 'free';
-            if (dbTier !== userTier) {
-                setUserTier(dbTier as 'free' | 'pro');
-                localStorage.setItem('lockin_tier', dbTier);
-            }
+            // Sync tier from database (database is source of truth)
+            const dbTier = (profileResponse.data.tier || 'free') as 'free' | 'pro';
+            setUserTier(dbTier);
+            setTierLoaded(true);
 
             // Handle daily reset logic
             const today = new Date().toISOString().split('T')[0]; // Get YYYY-MM-DD format
@@ -548,6 +547,7 @@ const App: React.FC = () => {
   };
 
   const checkCourseLimit = () => {
+      if (!tierLoaded) return true; // Don't block if tier not loaded yet
       if (userTier === 'free' && courses.length >= 1) {
           setPaywallReason('course_limit');
           setShowPaywall(true);
@@ -557,6 +557,7 @@ const App: React.FC = () => {
   };
 
   const checkTokenLimit = () => {
+      if (!tierLoaded) return true; // Don't block if tier not loaded yet
       if (userTier === 'pro') return true;
       if (dailyTokens < 5) return true;
       if (bonusCredits > 0) return true;
@@ -618,7 +619,6 @@ const App: React.FC = () => {
           .eq('id', user.id);
 
       setUserTier('free');
-      localStorage.setItem('lockin_tier', 'free');
   }
   
   if (loading) {
@@ -639,6 +639,7 @@ const App: React.FC = () => {
                     courses={courses}
                     onAddCourse={() => { if (checkCourseLimit()) setIsAddModalOpen(true); }}
                     userTier={userTier}
+                    tierLoaded={tierLoaded}
                     userProfile={userProfile}
                     dailyTokens={dailyTokens}
                     bonusCredits={bonusCredits}

@@ -8,6 +8,7 @@ interface SidebarProps {
   courses: Course[];
   onAddCourse: () => void;
   userTier: 'free' | 'pro';
+  tierLoaded?: boolean;
   userProfile: {
     full_name: string;
     email: string;
@@ -24,6 +25,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   courses,
   onAddCourse,
   userTier,
+  tierLoaded = true,
   userProfile,
   dailyTokens,
   bonusCredits,
@@ -170,7 +172,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
 
           {/* Token Credits - Extra Compact */}
-          {userTier === 'free' && (
+          {tierLoaded && userTier === 'free' && (
               <div className="bg-slate-50 border border-slate-200 rounded-md p-2 space-y-1.5">
                   <div className="flex justify-between items-center">
                       <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
@@ -211,8 +213,8 @@ const Sidebar: React.FC<SidebarProps> = ({
             </div>
             <div className="flex-1 text-left min-w-0">
               <p className="text-[11px] font-bold text-slate-800 truncate">{userName}</p>
-              <p className={`text-[8px] font-bold uppercase tracking-wide truncate ${userTier === 'free' ? 'text-slate-400' : 'text-blue-600'}`}>
-                  {userTier === 'free' ? 'Free Plan' : 'Pro Scholar'}
+              <p className={`text-[8px] font-bold uppercase tracking-wide truncate ${tierLoaded && userTier === 'free' ? 'text-slate-400' : 'text-blue-600'}`}>
+                  {tierLoaded && userTier === 'free' ? 'Free Plan' : 'Pro Scholar'}
               </p>
             </div>
             <Settings className="w-3 h-3 text-slate-400 group-hover:text-slate-600" />
