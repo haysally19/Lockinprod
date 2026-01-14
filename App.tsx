@@ -590,8 +590,8 @@ const App: React.FC = () => {
 
   // Triggered when user attempts to pay inside the modal
   const handlePaymentAttempt = () => {
-      // Call Stripe Checkout logic with email prefill
-      startCheckout(currentUserEmail);
+      // Call Stripe Checkout logic
+      startCheckout();
   };
 
   const onDowngrade = () => {
