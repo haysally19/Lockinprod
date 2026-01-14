@@ -104,6 +104,7 @@ interface MainLayoutProps {
     dailyTokens: number;
     bonusCredits: number;
     streak: number;
+    subscriptionEndDate: string | null;
     checkCourseLimit: () => boolean;
     checkTokenLimit: () => boolean;
     incrementTokenUsage: () => void;
@@ -200,6 +201,7 @@ const MainLayout: React.FC<MainLayoutProps> = (props) => {
                             onLogout={props.onLogout}
                             dailyTokens={props.dailyTokens}
                             bonusCredits={props.bonusCredits}
+                            subscriptionEndDate={props.subscriptionEndDate}
                         />
                     }
                 />
@@ -243,6 +245,7 @@ const App: React.FC = () => {
   const [dailyTokens, setDailyTokens] = useState<number>(0);
   const [bonusCredits, setBonusCredits] = useState<number>(0);
   const [streak, setStreak] = useState<number>(0);
+  const [subscriptionEndDate, setSubscriptionEndDate] = useState<string | null>(null);
 
   const [showPaywall, setShowPaywall] = useState(false);
   const [paywallReason, setPaywallReason] = useState<'course_limit' | 'token_limit' | 'upgrade'>('token_limit');
@@ -305,7 +308,7 @@ const App: React.FC = () => {
             return;
         }
 
-        const [coursesResponse, profileResponse] = await Promise.all([
+        const [coursesResponse, profileResponse, subscriptionResponse] = await Promise.all([
             supabase
                 .from('courses')
                 .select(`
@@ -318,6 +321,11 @@ const App: React.FC = () => {
                 .from('profiles')
                 .select('*')
                 .eq('id', user.id)
+                .maybeSingle(),
+            supabase
+                .from('subscriptions')
+                .select('current_period_end, status')
+                .eq('user_id', user.id)
                 .maybeSingle()
         ]);
 
@@ -352,6 +360,13 @@ const App: React.FC = () => {
         }));
 
         setCourses(transformedCourses);
+
+        // Set subscription end date if available and subscription is active
+        if (subscriptionResponse.data && (subscriptionResponse.data.status === 'active' || subscriptionResponse.data.status === 'trialing')) {
+            setSubscriptionEndDate(subscriptionResponse.data.current_period_end);
+        } else {
+            setSubscriptionEndDate(null);
+        }
 
         if (profileResponse.data) {
             setUserProfile({
@@ -628,6 +643,7 @@ const App: React.FC = () => {
                     dailyTokens={dailyTokens}
                     bonusCredits={bonusCredits}
                     streak={streak}
+                    subscriptionEndDate={subscriptionEndDate}
                     checkCourseLimit={checkCourseLimit}
                     checkTokenLimit={checkTokenLimit}
                     incrementTokenUsage={incrementTokenUsage}

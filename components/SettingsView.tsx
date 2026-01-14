@@ -14,14 +14,21 @@ interface SettingsViewProps {
   onLogout: () => void;
   dailyTokens: number;
   bonusCredits: number;
+  subscriptionEndDate: string | null;
 }
 
-const SettingsView: React.FC<SettingsViewProps> = ({ userTier, userProfile, onUpgrade, onDowngrade, onLogout, dailyTokens, bonusCredits }) => {
+const SettingsView: React.FC<SettingsViewProps> = ({ userTier, userProfile, onUpgrade, onDowngrade, onLogout, dailyTokens, bonusCredits, subscriptionEndDate }) => {
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
 
   const maxTokens = 5;
   const creditsRemaining = Math.max(0, maxTokens - dailyTokens);
   const totalCredits = creditsRemaining + bonusCredits;
+
+  const formatBillingDate = (dateString: string | null) => {
+    if (!dateString) return 'Not available';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  };
 
   const handleStripeUpgrade = () => {
     // Open the Paywall Modal directly.
@@ -66,7 +73,9 @@ const SettingsView: React.FC<SettingsViewProps> = ({ userTier, userProfile, onUp
                   {userTier === 'pro' ? 'Pro Scholar Plan' : 'Starter Plan'}
                 </h2>
                 <p className="text-xs text-slate-500">
-                  {userTier === 'pro' ? 'Active • Next billing date: June 1, 2024' : 'Free Tier • Limited Access'}
+                  {userTier === 'pro'
+                    ? `Active • Next billing date: ${formatBillingDate(subscriptionEndDate)}`
+                    : 'Free Tier • Limited Access'}
                 </p>
               </div>
             </div>
