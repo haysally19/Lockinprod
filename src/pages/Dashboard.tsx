@@ -9,6 +9,7 @@ interface Course {
   id: string;
   title: string;
   description: string;
+  color: string;
   created_at: string;
   assignments?: any[];
   notes?: any[];
