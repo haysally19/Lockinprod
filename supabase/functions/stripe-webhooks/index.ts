@@ -17,7 +17,8 @@ Deno.serve(async (req: Request) => {
 
   try {
     const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
-      apiVersion: '2024-12-18.acacia',
+      apiVersion: '2024-11-20.acacia',
+      httpClient: Stripe.createFetchHttpClient(),
     });
 
     const supabase = createClient(
@@ -51,7 +52,6 @@ Deno.serve(async (req: Request) => {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
         
-        // Get the subscription
         if (session.subscription) {
           const subscription = await stripe.subscriptions.retrieve(
             session.subscription as string
@@ -63,7 +63,6 @@ Deno.serve(async (req: Request) => {
             break;
           }
 
-          // Insert or update subscription
           await supabase.from('subscriptions').upsert({
             user_id: userId,
             stripe_subscription_id: subscription.id,

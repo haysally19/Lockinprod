@@ -17,7 +17,8 @@ Deno.serve(async (req: Request) => {
 
   try {
     const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
-      apiVersion: '2024-12-18.acacia',
+      apiVersion: '2024-11-20.acacia',
+      httpClient: Stripe.createFetchHttpClient(),
     });
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
@@ -25,7 +26,6 @@ Deno.serve(async (req: Request) => {
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Get user from JWT
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       return new Response(
@@ -57,7 +57,6 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // Get or create Stripe customer
     let customerId: string;
     
     const { data: existingCustomer } = await supabase
@@ -69,7 +68,6 @@ Deno.serve(async (req: Request) => {
     if (existingCustomer?.stripe_customer_id) {
       customerId = existingCustomer.stripe_customer_id;
     } else {
-      // Create new Stripe customer
       const customer = await stripe.customers.create({
         email: user.email,
         metadata: {
@@ -77,7 +75,6 @@ Deno.serve(async (req: Request) => {
         },
       });
 
-      // Store customer in database
       await supabase.from('customers').insert({
         id: user.id,
         stripe_customer_id: customer.id,
@@ -87,7 +84,6 @@ Deno.serve(async (req: Request) => {
       customerId = customer.id;
     }
 
-    // Create checkout session
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       line_items: [
