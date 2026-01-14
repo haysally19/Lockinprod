@@ -1,97 +1,33 @@
-import { supabase } from './supabase';
-
 export const STRIPE_CONFIG = {
-  PRICE_ID: import.meta.env.VITE_STRIPE_PRICE_ID || ''
+  CHECKOUT_URL: import.meta.env.VITE_STRIPE_CHECKOUT_URL || '',
+  PORTAL_URL: import.meta.env.VITE_STRIPE_PORTAL_URL || ''
 };
 
-export const startCheckout = async () => {
-  if (!STRIPE_CONFIG.PRICE_ID) {
-    console.error("Stripe Price ID not configured");
-    alert("Stripe Configuration Missing:\nPlease add your VITE_STRIPE_PRICE_ID to the .env file");
+export const startCheckout = (userEmail?: string) => {
+  if (!STRIPE_CONFIG.CHECKOUT_URL) {
+    console.warn("Stripe Checkout URL not configured");
+    alert("Stripe Configuration Missing:\nPlease add your STRIPE_CHECKOUT_URL in lib/stripe.ts");
     return;
   }
-
-  try {
-    const { data: { session } } = await supabase.auth.getSession();
-
-    if (!session) {
-      alert("Please log in to upgrade");
-      return;
-    }
-
-    const functionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/stripe-checkout`;
-    const currentUrl = window.location.origin;
-
-    const response = await fetch(functionUrl, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${session.access_token}`,
-        'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        price_id: STRIPE_CONFIG.PRICE_ID,
-        mode: 'subscription',
-        success_url: `${currentUrl}?checkout=success`,
-        cancel_url: `${currentUrl}?checkout=canceled`
-      })
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to create checkout session');
-    }
-
-    const { url } = await response.json();
-
-    if (url) {
-      window.location.href = url;
-    } else {
-      throw new Error('No checkout URL returned');
-    }
-  } catch (error) {
-    console.error('Checkout error:', error);
-    alert('Failed to start checkout. Please try again.');
+  
+  let url = STRIPE_CONFIG.CHECKOUT_URL;
+  
+  // Append email to pre-fill the checkout form if provided
+  if (userEmail) {
+    const separator = url.includes('?') ? '&' : '?';
+    url = `${url}${separator}prefilled_email=${encodeURIComponent(userEmail)}`;
   }
+
+  // Open checkout in new tab
+  window.open(url, '_self'); // Open in same tab for smoother flow
 };
 
-export const openPortal = async () => {
-  try {
-    const { data: { session } } = await supabase.auth.getSession();
-
-    if (!session) {
-      alert("Please log in to manage your subscription");
-      return;
-    }
-
-    const functionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-portal-session`;
-
-    const response = await fetch(functionUrl, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${session.access_token}`,
-        'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        return_url: window.location.origin
-      })
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to create portal session');
-    }
-
-    const { url } = await response.json();
-
-    if (url) {
-      window.open(url, '_blank');
-    } else {
-      throw new Error('No portal URL returned');
-    }
-  } catch (error) {
-    console.error('Portal error:', error);
-    alert('Failed to open customer portal. Please try again.');
+export const openPortal = () => {
+  if (!STRIPE_CONFIG.PORTAL_URL) {
+    console.warn("Stripe Portal URL not configured");
+    alert("Stripe Configuration Missing:\nPlease add your STRIPE_PORTAL_URL in lib/stripe.ts");
+    return;
   }
+  // Open portal in new tab
+  window.open(STRIPE_CONFIG.PORTAL_URL, '_blank');
 };
