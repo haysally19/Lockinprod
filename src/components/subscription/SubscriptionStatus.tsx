@@ -1,8 +1,10 @@
-import React from 'react';
-import { Crown, Calendar, CreditCard } from 'lucide-react';
+import React, { useState } from 'react';
+import { Crown, Calendar, CreditCard, Settings, Loader2 } from 'lucide-react';
+import { supabase } from '../../lib/supabase';
 
 interface SubscriptionStatusProps {
   subscription: {
+    customer_id?: string;
     subscription_status: string;
     price_id: string | null;
     current_period_end: number | null;
@@ -13,6 +15,47 @@ interface SubscriptionStatusProps {
 }
 
 export function SubscriptionStatus({ subscription }: SubscriptionStatusProps) {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleManageSubscription = async () => {
+    if (!subscription?.customer_id) return;
+
+    setIsLoading(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session?.access_token) {
+        throw new Error('No authentication token found');
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-portal-session`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            customerId: subscription.customer_id,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to create portal session');
+      }
+
+      const { url } = await response.json();
+      window.location.href = url;
+    } catch (error) {
+      console.error('Error opening customer portal:', error);
+      alert('Failed to open subscription management portal. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   if (!subscription || subscription.subscription_status === 'not_started') {
     return (
       <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
@@ -101,6 +144,28 @@ export function SubscriptionStatus({ subscription }: SubscriptionStatusProps) {
           </div>
         )}
       </div>
+
+      {subscription.customer_id && (
+        <div className="mt-4 pt-4 border-t border-gray-200">
+          <button
+            onClick={handleManageSubscription}
+            disabled={isLoading}
+            className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Loading...
+              </>
+            ) : (
+              <>
+                <Settings className="h-4 w-4 mr-2" />
+                Manage Subscription
+              </>
+            )}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
