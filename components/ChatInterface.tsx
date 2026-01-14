@@ -235,8 +235,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ course, initialMessage, o
   }
 
   return (
-    <div className="flex flex-col h-full bg-slate-50 md:bg-white relative">
-      <div className="flex-1 overflow-y-auto px-3 py-4 md:p-8 space-y-4 md:space-y-6 pb-32 md:pb-8 custom-scrollbar">
+    <div className="flex flex-col h-full bg-slate-50 md:bg-white relative overflow-hidden">
+      <div className="flex-1 overflow-y-auto px-3 py-4 md:p-8 space-y-4 md:space-y-6 pb-40 md:pb-8 custom-scrollbar">
         <div className="max-w-4xl mx-auto space-y-4 md:space-y-6">
             {messages.map((msg, idx) => (
             <div key={idx} className={`flex gap-2 md:gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
@@ -302,7 +302,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ course, initialMessage, o
 
       {/* Floating Calculator */}
       {showCalculator && (
-        <div className="fixed md:absolute bottom-28 md:bottom-24 right-3 md:right-4 z-50 animate-in slide-in-from-bottom-5">
+        <div className="fixed bottom-32 md:bottom-24 right-3 md:right-4 z-50 animate-in slide-in-from-bottom-5">
             <div className="relative">
                 <button
                     onClick={() => setShowCalculator(false)}
@@ -317,7 +317,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ course, initialMessage, o
 
       {/* Image Preview */}
       {attachedImage && (
-          <div className="absolute bottom-20 md:bottom-24 left-3 md:left-4 right-3 md:right-auto md:max-w-4xl z-10 animate-in slide-in-from-bottom-2">
+          <div className="fixed md:absolute bottom-24 md:bottom-24 left-3 md:left-4 right-3 md:right-auto md:max-w-4xl z-10 animate-in slide-in-from-bottom-2">
               <div className="bg-white p-2 rounded-xl shadow-lg border border-slate-200 inline-flex items-center gap-3">
                   <img src={attachedImage} alt="Preview" className="h-12 w-12 object-cover rounded-lg" />
                   <span className="text-xs text-slate-500 font-medium">Image attached</span>
@@ -329,7 +329,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ course, initialMessage, o
       )}
 
       <div
-        className="bg-white/95 backdrop-blur-lg border-t border-slate-100 z-40 shadow-lg shadow-slate-900/5"
+        className="fixed md:relative bottom-0 left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-slate-100 z-40 shadow-lg shadow-slate-900/5"
         style={{
           paddingLeft: 'max(0.75rem, env(safe-area-inset-left))',
           paddingRight: 'max(0.75rem, env(safe-area-inset-right))',
