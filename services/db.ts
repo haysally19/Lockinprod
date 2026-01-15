@@ -146,18 +146,5 @@ export const db = {
       .eq('user_id', user.id);
 
     if (error) throw error;
-  },
-
-  async deleteCourse(courseId: string) {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Not authenticated');
-
-    const { error } = await supabase
-      .from('courses')
-      .delete()
-      .eq('id', courseId)
-      .eq('user_id', user.id);
-
-    if (error) throw error;
   }
 };

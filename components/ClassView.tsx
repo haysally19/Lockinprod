@@ -1,8 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { Course, TabView, Assignment, Note, CourseDocument } from '../types';
-import { MessageSquare, FileText, CheckSquare, GraduationCap, Files, Layout, BrainCircuit, MoreVertical, Trash2 } from 'lucide-react';
+import { MessageSquare, FileText, CheckSquare, GraduationCap, Files, Layout, BrainCircuit } from 'lucide-react';
 import ChatInterface from './ChatInterface';
 import EssayGrader from './EssayGrader';
 import NotesModule from './NotesModule';
@@ -23,12 +23,11 @@ interface ClassViewProps {
   onDeleteNote: (id: string) => Promise<void>;
   onAddDoc: (courseId: string, d: Omit<CourseDocument, 'id'>) => Promise<void>;
   onDeleteDoc: (id: string) => Promise<void>;
-  onDeleteCourse: (courseId: string) => Promise<void>;
 }
 
-const ClassView: React.FC<ClassViewProps> = ({
-  course,
-  checkTokenLimit,
+const ClassView: React.FC<ClassViewProps> = ({ 
+  course, 
+  checkTokenLimit, 
   incrementTokenUsage,
   onAddAssignment,
   onUpdateAssignment,
@@ -36,14 +35,11 @@ const ClassView: React.FC<ClassViewProps> = ({
   onUpdateNote,
   onDeleteNote,
   onAddDoc,
-  onDeleteDoc,
-  onDeleteCourse
+  onDeleteDoc
 }) => {
   const location = useLocation();
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabView>('overview');
   const [initialChatQuery, setInitialChatQuery] = useState<string>('');
-  const [showMenu, setShowMenu] = useState(false);
 
   useEffect(() => {
     if (location.state?.openTab) {
@@ -67,28 +63,12 @@ const ClassView: React.FC<ClassViewProps> = ({
     setActiveTab('chat');
   };
 
-  const handleDeleteClass = async () => {
-    const confirmed = window.confirm(
-      `Are you sure you want to delete "${course.name}"?\n\nThis will permanently delete:\n- All assignments\n- All notes\n- All documents\n- All chat history\n\nThis action cannot be undone.`
-    );
-
-    if (confirmed) {
-      try {
-        await onDeleteCourse(course.id);
-        navigate('/');
-      } catch (error) {
-        console.error('Error deleting course:', error);
-      }
-    }
-    setShowMenu(false);
-  };
-
   return (
     <div className="flex flex-col h-full bg-[#fcfdfe] overflow-hidden">
       {/* Dynamic Native-style Header - Compact Version */}
       <header className="bg-white border-b border-slate-200 z-[30] flex-shrink-0 shadow-[0_1px_2px_0_rgba(0,0,0,0.02)]">
         <div className="max-w-screen-2xl mx-auto w-full px-4 py-2.5 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3 min-w-0 flex-1">
+          <div className="flex items-center gap-3 min-w-0">
             <div className={`w-9 h-9 rounded-lg ${course.color} flex items-center justify-center text-white/95 font-bold shadow-sm flex-shrink-0 text-sm`}>
               {course.name.substring(0, 2).toUpperCase()}
             </div>
@@ -122,35 +102,6 @@ const ClassView: React.FC<ClassViewProps> = ({
                     );
                 })}
             </div>
-          </div>
-
-          {/* Class Options Menu */}
-          <div className="relative flex-shrink-0">
-            <button
-              onClick={() => setShowMenu(!showMenu)}
-              className="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
-              aria-label="Class options"
-            >
-              <MoreVertical className="w-5 h-5" />
-            </button>
-
-            {showMenu && (
-              <>
-                <div
-                  className="fixed inset-0 z-40"
-                  onClick={() => setShowMenu(false)}
-                />
-                <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-50">
-                  <button
-                    onClick={handleDeleteClass}
-                    className="w-full flex items-center gap-3 px-4 py-2.5 text-left text-red-600 hover:bg-red-50 transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    <span className="text-sm font-medium">Delete Class</span>
-                  </button>
-                </div>
-              </>
-            )}
           </div>
         </div>
       </header>
