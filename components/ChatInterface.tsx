@@ -253,11 +253,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ course, initialMessage, o
                     ? 'bg-slate-50 border border-slate-100 text-slate-800'
                     : 'bg-blue-600 text-white'
                 }`}>
-                <div className="prose prose-sm max-w-none text-current font-sans overflow-x-auto">
+                <div className="prose prose-sm max-w-none text-current font-sans overflow-x-auto katex-content">
                     {msg.role === 'model' ? (
                        <ReactMarkdown
                           remarkPlugins={[remarkMath]}
-                          rehypePlugins={[[rehypeKatex, { strict: false, throwOnError: false, output: 'mathml' }]]}
+                          rehypePlugins={[[rehypeKatex, { strict: false, throwOnError: false }]]}
                           components={{
                               p: ({node, ...props}) => <p className="mb-2 last:mb-0" {...props} />,
                               a: ({node, ...props}) => <a className="text-blue-500 hover:underline" {...props} />,

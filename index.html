@@ -131,12 +131,35 @@
         transform: rotateX(12deg);
       }
       
-      /* KaTeX overrides for better fit */
+      /* KaTeX overrides for perfect math rendering */
       .katex-display {
         overflow-x: auto;
         overflow-y: hidden;
         padding-top: 0.5em;
         padding-bottom: 0.5em;
+        margin: 1em 0;
+      }
+
+      .katex-content .katex {
+        font-size: 1.1em;
+      }
+
+      .katex-content .katex-display {
+        text-align: center;
+      }
+
+      .katex-content p:has(.katex-display) {
+        margin: 0.75em 0;
+      }
+
+      /* Ensure inline math aligns properly */
+      .katex-content .katex-html {
+        display: inline;
+      }
+
+      /* Prevent prose styles from breaking math */
+      .prose .katex * {
+        all: revert;
       }
     </style>
   <script type="importmap">
