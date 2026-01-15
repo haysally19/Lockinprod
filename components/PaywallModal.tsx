@@ -84,7 +84,7 @@ const PaywallModal: React.FC<PaywallModalProps> = ({ isOpen, onClose, onUpgrade,
             <div className="flex flex-col items-start mb-3">
                 <div className="text-xs font-bold text-slate-500 uppercase tracking-wide">Pro Scholar</div>
                 <div className="flex items-baseline gap-1">
-                    <span className="text-3xl font-extrabold text-slate-900">$14.99</span>
+                    <span className="text-3xl font-extrabold text-slate-900">$9.99</span>
                     <span className="text-sm font-medium text-slate-500">/month</span>
                 </div>
             </div>
