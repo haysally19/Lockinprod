@@ -12,15 +12,12 @@ const LandingPage: React.FC = () => {
       <main className="overflow-x-hidden">
         {/* HERO SECTION - LIGHT THEME */}
         <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden bg-white">
-            {/* Background Decor - Prettier Gradients */}
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px]"></div>
-            
             {/* Top Left Gradient */}
             <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[70%] bg-gradient-to-br from-blue-100/50 via-indigo-100/40 to-purple-100/30 rounded-full blur-[120px] pointer-events-none -z-10"></div>
-            
+
             {/* Bottom Right Gradient */}
             <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[70%] bg-gradient-to-tl from-cyan-100/50 via-blue-100/40 to-indigo-100/30 rounded-full blur-[120px] pointer-events-none -z-10"></div>
-            
+
             {/* Center Subtle Highlight */}
             <div className="absolute top-[30%] left-[50%] -translate-x-[50%] w-[600px] h-[600px] bg-rose-100/10 rounded-full blur-[100px] pointer-events-none -z-10"></div>
 
