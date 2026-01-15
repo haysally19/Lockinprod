@@ -444,7 +444,7 @@ const LandingPage: React.FC = () => {
                         </div>
                         <h3 className="font-bold text-xl mb-2">Pro Scholar</h3>
                         <div className="flex items-baseline gap-1 mb-6">
-                            <span className="text-4xl font-bold text-white">$14.99</span>
+                            <span className="text-4xl font-bold text-white">$9.99</span>
                             <span className="text-slate-400">/month</span>
                         </div>
                         <p className="text-slate-300 mb-8 font-medium">Everything you need to excel.</p>
