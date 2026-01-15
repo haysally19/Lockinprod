@@ -442,7 +442,7 @@ const LandingPage: React.FC = () => {
               />
               <FAQItem 
                 question="Can I use it on my phone?"
-                answer="Absolutely. Lockin AI is fully responsive and works great on mobile devices, so you can study on the go."
+                answer="Absolutely. Lockin AI is fully responsive and works great on mobile devices, so you can study on the go.The app store version is in production. Click share and add it to your home screen for now!"
               />
             </div>
           </div>
