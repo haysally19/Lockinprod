@@ -146,5 +146,11 @@ export const db = {
       .eq('user_id', user.id);
 
     if (error) throw error;
+  },
+
+  // --- Courses ---
+  async deleteCourse(courseId: string) {
+    const { error } = await supabase.from('courses').delete().eq('id', courseId);
+    if (error) throw error;
   }
 };

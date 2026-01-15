@@ -1,13 +1,20 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Course } from '../types';
-import { MoreVertical, Calendar, MessageSquare, FileText, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { MoreVertical, Calendar, MessageSquare, FileText, ArrowRight, CheckCircle2, Trash2 } from 'lucide-react';
 
 interface ClassCardProps {
   course: Course;
+  onDelete?: (id: string) => Promise<void>;
 }
 
-const ClassCard: React.FC<ClassCardProps> = ({ course }) => {
+const ClassCard: React.FC<ClassCardProps> = ({ course, onDelete }) => {
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (onDelete && confirm(`Delete ${course.name}?`)) {
+      await onDelete(course.id);
+    }
+  };
   // --- Data Calculations ---
   const totalAssignments = course.assignments.length;
   const completedAssignments = course.assignments.filter(a => a.completed).length;
@@ -94,7 +101,16 @@ const ClassCard: React.FC<ClassCardProps> = ({ course }) => {
 
           {/* Action Footer (Condensed) */}
           <div className="mt-3 pt-2 border-t border-slate-50 flex items-center justify-between">
-              <div className="flex gap-1">
+              <div className="flex gap-1 items-center">
+                  {onDelete && (
+                    <button
+                      onClick={handleDelete}
+                      className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                      title="Delete class"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
                   <Link to={`/class/${course.id}`} state={{ openTab: 'chat' }} className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors" title="AI Tutor">
                       <MessageSquare className="w-3.5 h-3.5" />
                   </Link>
@@ -102,7 +118,7 @@ const ClassCard: React.FC<ClassCardProps> = ({ course }) => {
                       <FileText className="w-3.5 h-3.5" />
                   </Link>
               </div>
-              <Link 
+              <Link
                   to={`/class/${course.id}`}
                   className="flex items-center gap-1 text-[10px] font-bold text-slate-500 hover:text-blue-600 transition-colors bg-slate-50 hover:bg-blue-50 px-2 py-1 rounded-md"
               >

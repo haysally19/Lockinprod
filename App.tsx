@@ -118,6 +118,7 @@ interface MainLayoutProps {
     isAddModalOpen: boolean;
     setIsAddModalOpen: (val: boolean) => void;
     handleAddCourse: (c: Course) => void;
+    handleDeleteCourse: (id: string) => Promise<void>;
     showPaywall: boolean;
     setShowPaywall: (val: boolean) => void;
     paywallReason: 'course_limit' | 'token_limit' | 'upgrade';
@@ -165,16 +166,17 @@ const MainLayout: React.FC<MainLayoutProps> = (props) => {
             <div className="flex-1 overflow-hidden relative">
                 <Routes>
                 <Route path="/" element={<Dashboard courses={props.courses} streak={props.streak} userTier={props.userTier} tierLoaded={props.tierLoaded} onUpgrade={props.onUpgrade} onAddCourse={props.onAddCourse} />} />
-                <Route 
-                    path="/classes" 
+                <Route
+                    path="/classes"
                     element={
-                        <ClassesOverview 
-                            courses={props.courses} 
+                        <ClassesOverview
+                            courses={props.courses}
                             onAddCourse={() => {
                                 if (props.checkCourseLimit()) props.setIsAddModalOpen(true);
-                            }} 
+                            }}
+                            onDeleteCourse={props.handleDeleteCourse}
                         />
-                    } 
+                    }
                 />
                 <Route path="/calendar" element={<CalendarView courses={props.courses} />} />
                 <Route 
@@ -454,12 +456,22 @@ const App: React.FC = () => {
         }).select().single();
 
         if (error) throw error;
-        
+
         const createdCourse: Course = { ...newCourse, id: data.id };
         setCourses([...courses, createdCourse]);
     } catch (e) {
         console.error("Error creating course:", e);
         alert("Failed to create course");
+    }
+  };
+
+  const handleDeleteCourse = async (courseId: string) => {
+    try {
+        await db.deleteCourse(courseId);
+        setCourses(prev => prev.filter(c => c.id !== courseId));
+    } catch (e) {
+        console.error("Error deleting course:", e);
+        alert("Failed to delete course");
     }
   };
 
@@ -657,6 +669,7 @@ const App: React.FC = () => {
                     isAddModalOpen={isAddModalOpen}
                     setIsAddModalOpen={setIsAddModalOpen}
                     handleAddCourse={handleAddCourse}
+                    handleDeleteCourse={handleDeleteCourse}
                     showPaywall={showPaywall}
                     setShowPaywall={setShowPaywall}
                     paywallReason={paywallReason}

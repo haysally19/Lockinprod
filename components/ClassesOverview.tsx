@@ -6,9 +6,10 @@ import ClassCard from './ClassCard';
 interface ClassesOverviewProps {
   courses: Course[];
   onAddCourse: () => void;
+  onDeleteCourse: (id: string) => Promise<void>;
 }
 
-const ClassesOverview: React.FC<ClassesOverviewProps> = ({ courses, onAddCourse }) => {
+const ClassesOverview: React.FC<ClassesOverviewProps> = ({ courses, onAddCourse, onDeleteCourse }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<'name' | 'grade' | 'subject'>('name');
 
@@ -115,7 +116,7 @@ const ClassesOverview: React.FC<ClassesOverviewProps> = ({ courses, onAddCourse 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                       {filteredCourses.map((course) => (
                           <div key={course.id} className="h-full animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            <ClassCard course={course} />
+                            <ClassCard course={course} onDelete={onDeleteCourse} />
                           </div>
                       ))}
                       
