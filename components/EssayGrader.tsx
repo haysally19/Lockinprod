@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Course, EssayFeedback } from '../types';
 import { gradeEssay } from '../services/geminiService';
 import { CheckCircle2, AlertTriangle, Lightbulb, ArrowRight, Loader2 } from 'lucide-react';
+import { markOnboardingTaskComplete } from '../services/onboardingService';
 
 interface EssayGraderProps {
   course: Course;
@@ -30,6 +31,7 @@ const EssayGrader: React.FC<EssayGraderProps> = ({ course, checkTokenLimit, incr
     try {
       const result = await gradeEssay(essay, topic);
       setFeedback(result);
+      await markOnboardingTaskComplete('ai_prompt_completed');
     } catch (err) {
       setError("Failed to grade essay. Please try again.");
       console.error(err);

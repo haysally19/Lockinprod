@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Course, Flashcard, QuizQuestion } from '../types';
 import { generateFlashcards, generateQuiz } from '../services/geminiService';
 import { Sparkles, BrainCircuit, Layers, Check, ChevronLeft, ArrowRight, RotateCcw, CheckCircle, XCircle, Trophy, FileText, AlertCircle } from 'lucide-react';
+import { markOnboardingTaskComplete } from '../services/onboardingService';
 
 interface StudyCenterProps {
   course: Course;
@@ -56,6 +57,7 @@ const StudyCenter: React.FC<StudyCenterProps> = ({ course, checkTokenLimit, incr
       setCurrentCardIndex(0);
       setIsFlipped(false);
       setMode('flashcards');
+      await markOnboardingTaskComplete('ai_prompt_completed');
     } catch (e) { alert("Failed to generate."); } finally { setLoading(false); }
   };
 
@@ -72,6 +74,7 @@ const StudyCenter: React.FC<StudyCenterProps> = ({ course, checkTokenLimit, incr
       setScore(0);
       setShowExplanation(false);
       setMode('quiz');
+      await markOnboardingTaskComplete('ai_prompt_completed');
     } catch (e) { alert("Failed to generate."); } finally { setLoading(false); }
   };
 

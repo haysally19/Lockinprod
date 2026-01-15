@@ -8,6 +8,7 @@ import rehypeKatex from 'rehype-katex';
 import Calculator from './Calculator';
 import { GenerateContentResponse, Part } from "@google/genai";
 import { db } from '../services/db';
+import { markOnboardingTaskComplete } from '../services/onboardingService';
 
 interface ChatInterfaceProps {
   course: Course;
@@ -190,6 +191,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ course, initialMessage, o
             timestamp: botMsgTimestamp
           };
           await db.saveChatMessage(course.id, modelMsg);
+          await markOnboardingTaskComplete('ai_prompt_completed');
         } catch (err) {
           console.error('Failed to save model message:', err);
         }

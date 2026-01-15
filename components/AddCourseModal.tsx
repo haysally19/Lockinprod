@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Course, ClassSubject } from '../types';
 import { X, Check, BookOpen } from 'lucide-react';
+import { markOnboardingTaskComplete } from '../services/onboardingService';
 
 interface AddCourseModalProps {
   isOpen: boolean;
@@ -21,7 +22,7 @@ const AddCourseModal: React.FC<AddCourseModalProps> = ({ isOpen, onClose, onAdd 
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
 
@@ -37,6 +38,7 @@ const AddCourseModal: React.FC<AddCourseModalProps> = ({ isOpen, onClose, onAdd 
     };
 
     onAdd(newCourse);
+    await markOnboardingTaskComplete('add_class_completed');
     setName('');
     setSubject(ClassSubject.GENERAL);
     onClose();

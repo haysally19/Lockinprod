@@ -2,6 +2,7 @@ import React from 'react';
 import { Course } from '../types';
 import { Link } from 'react-router-dom';
 import { BookOpen, Clock, CheckCircle2, AlertCircle, BarChart3, GraduationCap, ArrowRight, Flame, Zap, Plus, ChevronRight } from 'lucide-react';
+import OnboardingChecklist from './OnboardingChecklist';
 
 interface DashboardProps {
   courses: Course[];
@@ -70,6 +71,7 @@ const Dashboard: React.FC<DashboardProps> = ({ courses, streak, userTier, tierLo
             )}
             <button
               onClick={onAddCourse}
+              data-add-course-btn
               className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold text-xs shadow-lg shadow-indigo-600/20 hover:bg-indigo-700 active:scale-95 transition-all group"
             >
               <Plus className="w-3.5 h-3.5 group-hover:rotate-90 transition-transform" />
@@ -77,6 +79,9 @@ const Dashboard: React.FC<DashboardProps> = ({ courses, streak, userTier, tierLo
             </button>
           </div>
         </div>
+
+        {/* Onboarding Checklist */}
+        <OnboardingChecklist />
 
         {/* Top Level Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">

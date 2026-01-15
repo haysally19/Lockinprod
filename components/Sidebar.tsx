@@ -136,11 +136,12 @@ const Sidebar: React.FC<SidebarProps> = ({
           </h2>
 
           <div className="space-y-1">
-              {courses.slice(0, 10).map((course) => (
+              {courses.slice(0, 10).map((course, index) => (
               <Link
                   key={course.id}
                   to={`/class/${course.id}`}
                   onClick={onClose}
+                  data-class-link={index === 0 ? true : undefined}
                   className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all group ${
                   currentPath === `/class/${course.id}`
                       ? 'bg-slate-100 text-slate-900 font-bold'
