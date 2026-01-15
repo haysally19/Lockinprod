@@ -54,7 +54,7 @@ const Navbar: React.FC = () => {
         >
             <div className="container mx-auto px-6 flex items-center justify-between" style={{ paddingLeft: 'max(1.5rem, env(safe-area-inset-left))', paddingRight: 'max(1.5rem, env(safe-area-inset-right))' }}>
                 <Link to="/" className="flex items-center group relative z-[101]">
-                    <div className="h-12 w-auto transition-transform duration-300 group-hover:scale-105">
+                    <div className="h-20 w-auto transition-transform duration-300 group-hover:scale-105">
                         <Logo showText={true} />
                     </div>
                 </Link>
