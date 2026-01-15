@@ -60,8 +60,8 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   }
 }
 
-const ClassViewWrapper: React.FC<{ 
-  courses: Course[], 
+const ClassViewWrapper: React.FC<{
+  courses: Course[],
   checkTokenLimit: () => boolean,
   incrementTokenUsage: () => void,
   // DB Handlers passed down
@@ -71,7 +71,8 @@ const ClassViewWrapper: React.FC<{
   onUpdateNote: (n: any) => Promise<void>,
   onDeleteNote: (id: string) => Promise<void>,
   onAddDoc: (cid: string, d: any) => Promise<void>,
-  onDeleteDoc: (id: string) => Promise<void>
+  onDeleteDoc: (id: string) => Promise<void>,
+  onDeleteCourse: (cid: string) => Promise<void>
 }> = (props) => {
   const { id } = useParams<{ id: string }>();
   const course = props.courses.find(c => c.id === id);
@@ -79,8 +80,8 @@ const ClassViewWrapper: React.FC<{
     return <div className="p-8 text-center text-slate-500">Class not found.</div>;
   }
   return (
-      <ClassView 
-          course={course} 
+      <ClassView
+          course={course}
           checkTokenLimit={props.checkTokenLimit}
           incrementTokenUsage={props.incrementTokenUsage}
           onAddAssignment={props.onAddAssignment}
@@ -90,6 +91,7 @@ const ClassViewWrapper: React.FC<{
           onDeleteNote={props.onDeleteNote}
           onAddDoc={props.onAddDoc}
           onDeleteDoc={props.onDeleteDoc}
+          onDeleteCourse={props.onDeleteCourse}
       />
   );
 };
@@ -128,7 +130,8 @@ interface MainLayoutProps {
     onUpdateNote: (n: any) => Promise<void>,
     onDeleteNote: (id: string) => Promise<void>,
     onAddDoc: (cid: string, d: any) => Promise<void>,
-    onDeleteDoc: (id: string) => Promise<void>
+    onDeleteDoc: (id: string) => Promise<void>,
+    onDeleteCourse: (cid: string) => Promise<void>
 }
 
 const MainLayout: React.FC<MainLayoutProps> = (props) => {
@@ -177,11 +180,11 @@ const MainLayout: React.FC<MainLayoutProps> = (props) => {
                     } 
                 />
                 <Route path="/calendar" element={<CalendarView courses={props.courses} />} />
-                <Route 
-                    path="/class/:id" 
+                <Route
+                    path="/class/:id"
                     element={
-                        <ClassViewWrapper 
-                            courses={props.courses} 
+                        <ClassViewWrapper
+                            courses={props.courses}
                             checkTokenLimit={props.checkTokenLimit}
                             incrementTokenUsage={props.incrementTokenUsage}
                             onAddAssignment={props.onAddAssignment}
@@ -191,8 +194,9 @@ const MainLayout: React.FC<MainLayoutProps> = (props) => {
                             onDeleteNote={props.onDeleteNote}
                             onAddDoc={props.onAddDoc}
                             onDeleteDoc={props.onDeleteDoc}
+                            onDeleteCourse={props.onDeleteCourse}
                         />
-                    } 
+                    }
                 />
                 <Route
                     path="/settings"
@@ -454,12 +458,22 @@ const App: React.FC = () => {
         }).select().single();
 
         if (error) throw error;
-        
+
         const createdCourse: Course = { ...newCourse, id: data.id };
         setCourses([...courses, createdCourse]);
     } catch (e) {
         console.error("Error creating course:", e);
         alert("Failed to create course");
+    }
+  };
+
+  const handleDeleteCourse = async (courseId: string) => {
+    try {
+      await db.deleteCourse(courseId);
+      setCourses(courses.filter(c => c.id !== courseId));
+    } catch (e) {
+      console.error("Error deleting course:", e);
+      alert("Failed to delete course");
     }
   };
 
@@ -668,6 +682,7 @@ const App: React.FC = () => {
                     onDeleteNote={handleDeleteNote}
                     onAddDoc={handleAddDoc}
                     onDeleteDoc={handleDeleteDoc}
+                    onDeleteCourse={handleDeleteCourse}
                 />
             } />
           ) : (
