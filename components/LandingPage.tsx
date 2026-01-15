@@ -1,10 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, FileText, GraduationCap, ArrowRight, Check, Zap, ShieldCheck, BookOpen, ChevronDown, Star, PlayCircle, BarChart3, UploadCloud, Brain, Trophy } from 'lucide-react';
+import { Sparkles, FileText, GraduationCap, ArrowRight, Check, Zap, ShieldCheck, BookOpen, ChevronDown, Star, PlayCircle, BarChart3, UploadCloud, Brain, Trophy, Download } from 'lucide-react';
 import Navbar from './Navbar';
 import Footer from './Footer';
 
 const LandingPage: React.FC = () => {
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showInstallButton, setShowInstallButton] = useState(false);
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallButton(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handler);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handler);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) {
+      return;
+    }
+
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+
+    if (outcome === 'accepted') {
+      setShowInstallButton(false);
+    }
+
+    setDeferredPrompt(null);
+  };
+
   return (
     <div className="bg-white text-slate-900 font-sans antialiased selection:bg-blue-500 selection:text-white">
       <Navbar />
@@ -75,8 +107,19 @@ const LandingPage: React.FC = () => {
                         Get Started Free — No Credit Card
                         <ArrowRight className="w-5 h-5" />
                     </Link>
+                    {showInstallButton && (
+                        <button
+                            onClick={handleInstallClick}
+                            className="w-full sm:w-auto px-8 py-4 bg-slate-900 text-white font-bold rounded-full hover:bg-slate-800 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 shadow-lg shadow-slate-900/30"
+                        >
+                            <Download className="w-5 h-5" />
+                            Get the App
+                        </button>
+                    )}
                 </div>
-                <p className="text-sm text-slate-500 mt-4 animate-fade-in-up delay-350">Free forever. Upgrade anytime.</p>
+                <p className="text-sm text-slate-500 mt-4 animate-fade-in-up delay-350">
+                    {showInstallButton ? 'Install the app for quick access from your home screen' : 'Free forever. Upgrade anytime.'}
+                </p>
             </div>
 
             {/* Dashboard Screenshot */}
