@@ -84,7 +84,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         </button>
 
         <div className="p-4 flex items-center justify-center border-b border-slate-100 h-20">
-          <div className="h-10 w-auto transition-all duration-300 hover:scale-105">
+          <div className="h-14 w-auto transition-all duration-300 hover:scale-105">
             <Logo showText={true} />
           </div>
         </div>
