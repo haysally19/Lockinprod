@@ -38,28 +38,23 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
         if (error) throw error;
         onLogin();
       } else {
-        const { data: authData, error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
+          options: {
+            data: {
+              full_name: name,
+              phone: phone || null,
+            },
+          },
         });
         if (error) throw error;
 
-        // Create profile entry
-        if (authData.user) {
-          const { error: profileError } = await supabase
-            .from('profiles')
-            .insert({
-              id: authData.user.id,
-              full_name: name,
-              email: email,
-              phone: phone || null,
-            });
-
-          if (profileError) throw profileError;
+        if (data.session) {
+          onLogin();
+        } else {
+          setError('Please check your email to confirm your account before logging in.');
         }
-
-        // Auto login after sign up if session is created, otherwise waiting for email confirm
-        onLogin();
       }
     } catch (err: any) {
       console.error("Auth error:", err);
