@@ -9,6 +9,17 @@ const Navbar: React.FC = () => {
     const location = useLocation();
     const isLanding = location.pathname === '/';
 
+    const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+        if (href.startsWith('#')) {
+            e.preventDefault();
+            const element = document.querySelector(href);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+            setIsOpen(false);
+        }
+    };
+
     useEffect(() => {
         const handleScroll = () => {
             setScrolled(window.scrollY > 20);
@@ -51,9 +62,10 @@ const Navbar: React.FC = () => {
                 {/* Desktop Nav */}
                 <nav className="hidden md:flex items-center gap-8">
                     {navLinks.map(link => (
-                        <a 
-                            key={link.name} 
-                            href={link.href} 
+                        <a
+                            key={link.name}
+                            href={link.href}
+                            onClick={(e) => handleSmoothScroll(e, link.href)}
                             className={`text-sm font-semibold transition-colors ${linkColor}`}
                         >
                             {link.name}
@@ -94,10 +106,10 @@ const Navbar: React.FC = () => {
             <div className={`fixed inset-0 bg-white z-[90] transition-transform duration-300 md:hidden flex flex-col pt-24 px-6 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`} style={{ paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))', paddingLeft: 'max(1.5rem, env(safe-area-inset-left))', paddingRight: 'max(1.5rem, env(safe-area-inset-right))' }}>
                 <nav className="flex flex-col space-y-6 text-center">
                      {navLinks.map(link => (
-                        <a 
-                            key={link.name} 
-                            href={link.href} 
-                            onClick={() => setIsOpen(false)} 
+                        <a
+                            key={link.name}
+                            href={link.href}
+                            onClick={(e) => handleSmoothScroll(e, link.href)}
                             className="text-2xl font-bold text-slate-800"
                         >
                             {link.name}

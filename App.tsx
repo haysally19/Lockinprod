@@ -3,6 +3,8 @@ import { HashRouter as Router, Routes, Route, Navigate, useParams } from 'react-
 import Sidebar from './components/Sidebar';
 import LoginScreen from './components/LoginScreen';
 import LandingPage from './components/LandingPage';
+import PrivacyPolicy from './components/PrivacyPolicy';
+import TermsOfService from './components/TermsOfService';
 import AddCourseModal from './components/AddCourseModal';
 import { Course, ClassSubject, Assignment, Note, CourseDocument } from './types';
 import Dashboard from './components/Dashboard';
@@ -671,6 +673,8 @@ const App: React.FC = () => {
           ) : (
             <>
               <Route path="/login" element={<LoginScreen onLogin={handleLogin} />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<TermsOfService />} />
               <Route path="/" element={<LandingPage />} />
               <Route path="*" element={<Navigate to="/" />} />
             </>

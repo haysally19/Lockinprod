@@ -3,20 +3,24 @@ import { Link } from 'react-router-dom';
 import Logo from './Logo';
 
 const Footer: React.FC = () => {
+    const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+        if (href.startsWith('#')) {
+            e.preventDefault();
+            const element = document.querySelector(href);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    };
+
     const footerLinks = {
         'Product': [
-            { name: 'Features', href: '#' },
-            { name: 'Pricing', href: '#' },
-            { name: 'Updates', href: '#' },
-        ],
-        'Company': [
-            { name: 'About Us', href: '#' },
-            { name: 'Careers', href: '#' },
-            { name: 'Contact', href: '#' },
+            { name: 'Features', href: '#features' },
+            { name: 'Pricing', href: '#pricing' },
         ],
         'Legal': [
-            { name: 'Privacy Policy', href: '#' },
-            { name: 'Terms of Service', href: '#' },
+            { name: 'Privacy Policy', href: '/privacy' },
+            { name: 'Terms of Service', href: '/terms' },
         ],
     };
 
@@ -37,9 +41,19 @@ const Footer: React.FC = () => {
                                 <ul className="mt-4 space-y-3">
                                     {links.map(link => (
                                         <li key={link.name}>
-                                            <a href={link.href} className="text-slate-500 hover:text-blue-600 transition-colors">
-                                                {link.name}
-                                            </a>
+                                            {link.href.startsWith('/') ? (
+                                                <Link to={link.href} className="text-slate-500 hover:text-blue-600 transition-colors">
+                                                    {link.name}
+                                                </Link>
+                                            ) : (
+                                                <a
+                                                    href={link.href}
+                                                    onClick={(e) => handleSmoothScroll(e, link.href)}
+                                                    className="text-slate-500 hover:text-blue-600 transition-colors"
+                                                >
+                                                    {link.name}
+                                                </a>
+                                            )}
                                         </li>
                                     ))}
                                 </ul>
