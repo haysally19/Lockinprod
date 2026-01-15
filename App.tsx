@@ -259,16 +259,17 @@ const App: React.FC = () => {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('success') === 'true') {
-        alert("Payment successful! Your upgrade is being processed. Please refresh in a moment to see your Pro features.");
-
-        // Clean URL
-        const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+        // Clean URL first
+        const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + window.location.hash.split('?')[0];
         window.history.replaceState({path:newUrl},'',newUrl);
 
-        // Refresh data to get updated tier from database
+        // Show success message
+        alert("Payment successful! Your Pro upgrade is being processed.");
+
+        // Refresh data immediately to get updated tier from database
         setTimeout(() => {
             window.location.reload();
-        }, 2000);
+        }, 1500);
     }
   }, []);
 

@@ -76,18 +76,10 @@ Deno.serve(async (req: Request) => {
           });
 
           if (subscription.status === 'active' || subscription.status === 'trialing') {
-            const { data: user } = await supabase.auth.admin.getUserById(userId);
-
             await supabase
               .from('profiles')
-              .upsert({
-                id: userId,
-                email: user?.user?.email || '',
-                full_name: user?.user?.user_metadata?.full_name || user?.user?.email?.split('@')[0] || '',
-                tier: 'pro'
-              }, {
-                onConflict: 'id'
-              });
+              .update({ tier: 'pro' })
+              .eq('id', userId);
 
             console.log(`Updated user ${userId} to pro tier`);
           }
