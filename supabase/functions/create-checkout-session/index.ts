@@ -39,17 +39,10 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const token = authHeader.replace('Bearer ', '');
+    const jwt = authHeader.replace('Bearer ', '');
 
-    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
-      global: {
-        headers: {
-          Authorization: authHeader,
-        },
-      },
-    });
-
-    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser(jwt);
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 

@@ -12,7 +12,10 @@ export const startCheckout = async () => {
       throw new Error('No session found');
     }
 
-    console.log('Starting checkout...');
+    console.log('Starting checkout...', {
+      url: `${SUPABASE_URL}/functions/v1/create-checkout-session`,
+      hasToken: !!session.access_token
+    });
 
     const response = await fetch(`${SUPABASE_URL}/functions/v1/create-checkout-session`, {
       method: 'POST',
@@ -23,6 +26,8 @@ export const startCheckout = async () => {
       },
     });
 
+    console.log('Response status:', response.status);
+
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Response error:', response.status, errorText);
@@ -31,7 +36,7 @@ export const startCheckout = async () => {
     }
 
     const data = await response.json();
-    console.log('Checkout response:', data);
+    console.log('Checkout response data:', data);
 
     if (data.error) {
       console.error('Checkout error:', data.error);
@@ -40,10 +45,10 @@ export const startCheckout = async () => {
     }
 
     if (data.url) {
-      console.log('Redirecting to:', data.url);
+      console.log('Redirecting to Stripe checkout:', data.url);
       window.location.href = data.url;
     } else {
-      console.error('No URL in response');
+      console.error('No URL in response data:', data);
       alert('No checkout URL received. Please try again.');
       throw new Error('No checkout URL in response');
     }
