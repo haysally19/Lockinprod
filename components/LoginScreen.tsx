@@ -67,14 +67,14 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, initialMode = 'login
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 flex flex-col justify-center items-center p-4 relative overflow-hidden" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))', paddingLeft: 'max(1rem, env(safe-area-inset-left))', paddingRight: 'max(1rem, env(safe-area-inset-right))' }}>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 flex flex-col justify-center items-center p-4 md:p-6 relative overflow-hidden" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))', paddingLeft: 'max(1rem, env(safe-area-inset-left))', paddingRight: 'max(1rem, env(safe-area-inset-right))' }}>
       {/* Background Decor */}
-      <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-blue-100/50 rounded-full blur-[120px] pointer-events-none"></div>
-      <div className="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] bg-indigo-100/50 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute top-[-10%] left-[-5%] w-[500px] h-[500px] bg-gradient-to-br from-blue-200/40 to-cyan-200/40 rounded-full blur-[100px] pointer-events-none"></div>
+      <div className="absolute bottom-[-10%] right-[-5%] w-[500px] h-[500px] bg-gradient-to-br from-indigo-200/40 to-purple-200/40 rounded-full blur-[100px] pointer-events-none"></div>
 
       <div className={`w-full ${isLogin ? 'max-w-md' : 'max-w-5xl'} relative z-10 animate-fade-in-up`}>
         {!isLogin ? (
-          <div className="grid lg:grid-cols-2 gap-8 bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
+          <div className="grid lg:grid-cols-2 gap-8 bg-white rounded-3xl lg:rounded-3xl shadow-2xl border border-slate-200/80 overflow-hidden backdrop-blur-sm">
             {/* Left Side - Value Proposition */}
             <div className="hidden lg:flex flex-col justify-between bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 p-12 text-white relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
@@ -131,62 +131,40 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, initialMode = 'login
             </div>
 
             {/* Right Side - Sign Up Form */}
-            <div className="p-6 md:p-12">
-              {/* Mobile-First Social Proof - Shown at Top */}
-              <div className="lg:hidden mb-8 pb-6 border-b border-slate-100">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex -space-x-2">
-                    <img src="https://images.pexels.com/photos/3762800/pexels-photo-3762800.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&dpr=2" alt="Student" className="w-10 h-10 rounded-full border-2 border-white object-cover shadow-sm" />
-                    <img src="https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&dpr=2" alt="Student" className="w-10 h-10 rounded-full border-2 border-white object-cover shadow-sm" />
-                    <img src="https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&dpr=2" alt="Student" className="w-10 h-10 rounded-full border-2 border-white object-cover shadow-sm" />
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 border-2 border-white flex items-center justify-center text-xs font-bold text-white shadow-sm">
-                      +10K
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                    ))}
-                  </div>
-                </div>
-                <p className="text-sm text-slate-700 font-medium text-center leading-relaxed">
-                  "Raised my GPA by 0.8 points in one semester"
-                </p>
-                <p className="text-xs text-slate-500 text-center mt-1 font-semibold">
-                  — Sarah M., Stanford
-                </p>
-              </div>
-
-              <div className="mb-6">
-                <div className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-green-50 border border-green-200 text-green-700 text-sm font-bold mb-4 shadow-sm">
-                  <span className="relative flex h-2 w-2">
+            <div className="p-6 md:p-12 lg:p-12">
+              {/* Mobile Hero Section */}
+              <div className="mb-8">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 mb-6">
+                  <span className="relative flex h-2.5 w-2.5">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
                   </span>
-                  Free Forever • No Credit Card
+                  <span className="text-green-700 font-bold text-sm">Free Forever • No Credit Card</span>
                 </div>
-                <h1 className="text-3xl md:text-3xl font-bold text-slate-900 mb-3 leading-tight">
-                  Start crushing your goals today
-                </h1>
-                <p className="text-slate-600 text-base md:text-lg leading-relaxed">
-                  Join 10,000+ students using AI to boost their grades
-                </p>
-              </div>
 
-              {/* Mobile Benefits */}
-              <div className="lg:hidden mb-6 space-y-3">
-                {[
-                  { icon: <Sparkles className="w-4 h-4" />, text: '24/7 AI tutor' },
-                  { icon: <Zap className="w-4 h-4" />, text: 'Instant essay grading' },
-                  { icon: <Shield className="w-4 h-4" />, text: 'Private & secure' }
-                ].map((benefit, i) => (
-                  <div key={i} className="flex items-center gap-3">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
-                      {benefit.icon}
-                    </div>
-                    <p className="text-slate-700 font-medium text-sm">{benefit.text}</p>
+                <h1 className="text-4xl md:text-3xl lg:text-3xl font-bold text-slate-900 mb-4 leading-[1.1]">
+                  Your AI study companion
+                </h1>
+
+                <p className="text-slate-600 text-lg md:text-lg leading-relaxed mb-6">
+                  Get instant help with homework, essays, and studying. Available 24/7.
+                </p>
+
+                {/* Quick Stats */}
+                <div className="grid grid-cols-3 gap-3 mb-6 lg:hidden">
+                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-4 text-center border border-blue-100">
+                    <div className="text-2xl font-bold text-blue-700 mb-1">24/7</div>
+                    <div className="text-xs text-slate-600 font-medium">AI Tutor</div>
                   </div>
-                ))}
+                  <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-4 text-center border border-purple-100">
+                    <div className="text-2xl font-bold text-purple-700 mb-1">10K+</div>
+                    <div className="text-xs text-slate-600 font-medium">Students</div>
+                  </div>
+                  <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-4 text-center border border-green-100">
+                    <div className="text-2xl font-bold text-green-700 mb-1">Free</div>
+                    <div className="text-xs text-slate-600 font-medium">Forever</div>
+                  </div>
+                </div>
               </div>
 
               {error && (
@@ -197,62 +175,45 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, initialMode = 'login
               )}
 
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="text-sm font-bold text-slate-700 ml-1">Full Name</label>
+                <div>
                   <div className="relative">
-                    <User className="absolute left-4 top-4 w-5 h-5 text-slate-400" />
+                    <User className="absolute left-4 top-[1.125rem] w-5 h-5 text-slate-400" />
                     <input
                       type="text"
-                      placeholder="John Doe"
+                      placeholder="Full name"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-slate-900 text-base hover:border-slate-300"
+                      className="w-full pl-12 pr-4 py-[1.125rem] bg-white border-2 border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-slate-900 text-[17px] placeholder:text-slate-400 hover:border-slate-300 shadow-sm"
                       required
                     />
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-sm font-bold text-slate-700 ml-1">Email Address</label>
+                <div>
                   <div className="relative">
-                    <Mail className="absolute left-4 top-4 w-5 h-5 text-slate-400" />
+                    <Mail className="absolute left-4 top-[1.125rem] w-5 h-5 text-slate-400" />
                     <input
                       type="email"
-                      placeholder="student@university.edu"
+                      placeholder="Email address"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-slate-900 text-base hover:border-slate-300"
+                      className="w-full pl-12 pr-4 py-[1.125rem] bg-white border-2 border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-slate-900 text-[17px] placeholder:text-slate-400 hover:border-slate-300 shadow-sm"
                       required
                     />
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-sm font-bold text-slate-700 ml-1">Password</label>
+                <div>
                   <div className="relative">
-                    <Lock className="absolute left-4 top-4 w-5 h-5 text-slate-400" />
+                    <Lock className="absolute left-4 top-[1.125rem] w-5 h-5 text-slate-400" />
                     <input
                       type="password"
-                      placeholder="At least 8 characters"
+                      placeholder="Create password (8+ characters)"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-slate-900 text-base hover:border-slate-300"
+                      className="w-full pl-12 pr-4 py-[1.125rem] bg-white border-2 border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-slate-900 text-[17px] placeholder:text-slate-400 hover:border-slate-300 shadow-sm"
                       required
                       minLength={8}
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-sm font-bold text-slate-700 ml-1">Phone Number (Optional)</label>
-                  <div className="relative">
-                    <Phone className="absolute left-4 top-4 w-5 h-5 text-slate-400" />
-                    <input
-                      type="tel"
-                      placeholder="(555) 123-4567"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-slate-900 text-base hover:border-slate-300"
                     />
                   </div>
                 </div>
@@ -260,37 +221,44 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, initialMode = 'login
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-5 rounded-xl shadow-lg shadow-blue-500/30 transition-all transform active:scale-[0.98] flex items-center justify-center gap-2 mt-6 text-lg"
+                  className="w-full bg-gradient-to-r from-blue-600 via-blue-600 to-indigo-600 hover:from-blue-700 hover:via-blue-700 hover:to-indigo-700 text-white font-bold py-[1.125rem] rounded-2xl shadow-lg shadow-blue-500/25 transition-all transform active:scale-[0.98] flex items-center justify-center gap-2 mt-6 text-[17px]"
                 >
                   {isLoading ? (
                     <Loader2 className="w-6 h-6 animate-spin" />
                   ) : (
                     <>
                       Get Started Free
-                      <ArrowRight className="w-6 h-6" />
+                      <ArrowRight className="w-5 h-5" />
                     </>
                   )}
                 </button>
 
-                <div className="flex items-center justify-center gap-4 mt-4">
-                  <div className="flex items-center gap-1.5 text-xs text-slate-600">
-                    <Shield className="w-4 h-4 text-green-600" />
-                    <span className="font-medium">Secure signup</span>
-                  </div>
-                  <div className="w-1 h-1 bg-slate-300 rounded-full"></div>
-                  <div className="flex items-center gap-1.5 text-xs text-slate-600">
-                    <Check className="w-4 h-4 text-green-600" />
-                    <span className="font-medium">No credit card</span>
-                  </div>
-                </div>
-
-                <p className="text-xs text-slate-500 text-center mt-4">
+                <p className="text-xs text-center text-slate-500 pt-2">
                   By signing up, you agree to our{' '}
-                  <Link to="/terms" className="text-blue-600 hover:underline">Terms</Link>
+                  <Link to="/terms" className="text-blue-600 hover:underline font-medium">Terms</Link>
                   {' '}and{' '}
-                  <Link to="/privacy" className="text-blue-600 hover:underline">Privacy Policy</Link>
+                  <Link to="/privacy" className="text-blue-600 hover:underline font-medium">Privacy</Link>
                 </p>
               </form>
+
+              {/* Social Proof - Bottom */}
+              <div className="mt-8 pt-6 border-t border-slate-100">
+                <div className="flex items-center justify-center gap-3 mb-4">
+                  <div className="flex -space-x-2.5">
+                    <img src="https://images.pexels.com/photos/3762800/pexels-photo-3762800.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&dpr=2" alt="Student" className="w-9 h-9 rounded-full border-2 border-white object-cover shadow-sm" />
+                    <img src="https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&dpr=2" alt="Student" className="w-9 h-9 rounded-full border-2 border-white object-cover shadow-sm" />
+                    <img src="https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&dpr=2" alt="Student" className="w-9 h-9 rounded-full border-2 border-white object-cover shadow-sm" />
+                  </div>
+                  <div className="flex items-center gap-0.5">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                    ))}
+                  </div>
+                </div>
+                <p className="text-center text-sm text-slate-600 font-medium">
+                  Join 10,000+ students already using Lockin AI
+                </p>
+              </div>
 
               <div className="mt-6 pt-6 border-t border-slate-100 text-center">
                 <p className="text-slate-600 text-sm">
