@@ -109,9 +109,9 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, initialMode = 'login
                 <div className="border-t border-white/20 pt-8">
                   <div className="flex items-center gap-6 mb-4">
                     <div className="flex -space-x-2">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 border-2 border-white"></div>
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 border-2 border-white"></div>
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-red-500 border-2 border-white"></div>
+                      <img src="https://images.pexels.com/photos/3762800/pexels-photo-3762800.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&dpr=2" alt="Student" className="w-10 h-10 rounded-full border-2 border-white object-cover" />
+                      <img src="https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&dpr=2" alt="Student" className="w-10 h-10 rounded-full border-2 border-white object-cover" />
+                      <img src="https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&dpr=2" alt="Student" className="w-10 h-10 rounded-full border-2 border-white object-cover" />
                       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-cyan-500 border-2 border-white flex items-center justify-center text-xs font-bold">
                         +10K
                       </div>

@@ -80,9 +80,9 @@ const LandingPage: React.FC = () => {
                 <div className="flex flex-wrap items-center justify-center gap-6 mb-10 text-sm text-slate-600 animate-fade-in-up delay-250">
                     <div className="flex items-center gap-2">
                         <div className="flex -space-x-2">
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 border-2 border-white"></div>
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 border-2 border-white"></div>
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 border-2 border-white"></div>
+                            <img src="https://images.pexels.com/photos/3762800/pexels-photo-3762800.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&dpr=2" alt="Student" className="w-8 h-8 rounded-full border-2 border-white object-cover" />
+                            <img src="https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&dpr=2" alt="Student" className="w-8 h-8 rounded-full border-2 border-white object-cover" />
+                            <img src="https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&dpr=2" alt="Student" className="w-8 h-8 rounded-full border-2 border-white object-cover" />
                         </div>
                         <span className="font-bold text-slate-700">2,847 students joined this week</span>
                     </div>
