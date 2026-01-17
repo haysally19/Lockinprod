@@ -257,7 +257,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, initialMode = 'login
 
               {/* Mobile Social Proof */}
               <div className="lg:hidden mt-8 pt-6 border-t border-slate-100">
-                <div className="flex items-center justify-center gap-4 mb-3">
+                <div className="flex items-center justify-center gap-4 mb-4">
                   <div className="flex -space-x-2">
                     <img src="https://images.pexels.com/photos/3762800/pexels-photo-3762800.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&dpr=2" alt="Student" className="w-8 h-8 rounded-full border-2 border-white object-cover" />
                     <img src="https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&dpr=2" alt="Student" className="w-8 h-8 rounded-full border-2 border-white object-cover" />
@@ -269,8 +269,11 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, initialMode = 'login
                     ))}
                   </div>
                 </div>
-                <p className="text-xs text-slate-600 text-center">
-                  Trusted by 10,000+ students at top universities
+                <p className="text-sm text-slate-700 italic text-center mb-2">
+                  "Lockin AI helped me raise my GPA by 0.8 points in one semester. The AI tutor is like having a professor available 24/7!"
+                </p>
+                <p className="text-xs text-slate-500 text-center font-semibold">
+                  — Sarah M., Stanford University
                 </p>
               </div>
             </div>
