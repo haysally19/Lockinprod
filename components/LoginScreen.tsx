@@ -259,9 +259,9 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, initialMode = 'login
               <div className="lg:hidden mt-8 pt-6 border-t border-slate-100">
                 <div className="flex items-center justify-center gap-4 mb-3">
                   <div className="flex -space-x-2">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 border-2 border-white"></div>
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 border-2 border-white"></div>
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 border-2 border-white"></div>
+                    <img src="https://images.pexels.com/photos/3762800/pexels-photo-3762800.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&dpr=2" alt="Student" className="w-8 h-8 rounded-full border-2 border-white object-cover" />
+                    <img src="https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&dpr=2" alt="Student" className="w-8 h-8 rounded-full border-2 border-white object-cover" />
+                    <img src="https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&dpr=2" alt="Student" className="w-8 h-8 rounded-full border-2 border-white object-cover" />
                   </div>
                   <div className="flex items-center gap-1">
                     {[...Array(5)].map((_, i) => (
