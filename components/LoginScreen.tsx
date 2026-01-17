@@ -131,21 +131,62 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, initialMode = 'login
             </div>
 
             {/* Right Side - Sign Up Form */}
-            <div className="p-8 md:p-12">
-              <div className="mb-8">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-50 border border-green-200 text-green-700 text-xs font-bold mb-4">
+            <div className="p-6 md:p-12">
+              {/* Mobile-First Social Proof - Shown at Top */}
+              <div className="lg:hidden mb-8 pb-6 border-b border-slate-100">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex -space-x-2">
+                    <img src="https://images.pexels.com/photos/3762800/pexels-photo-3762800.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&dpr=2" alt="Student" className="w-10 h-10 rounded-full border-2 border-white object-cover shadow-sm" />
+                    <img src="https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&dpr=2" alt="Student" className="w-10 h-10 rounded-full border-2 border-white object-cover shadow-sm" />
+                    <img src="https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&dpr=2" alt="Student" className="w-10 h-10 rounded-full border-2 border-white object-cover shadow-sm" />
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 border-2 border-white flex items-center justify-center text-xs font-bold text-white shadow-sm">
+                      +10K
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                    ))}
+                  </div>
+                </div>
+                <p className="text-sm text-slate-700 font-medium text-center leading-relaxed">
+                  "Raised my GPA by 0.8 points in one semester"
+                </p>
+                <p className="text-xs text-slate-500 text-center mt-1 font-semibold">
+                  — Sarah M., Stanford
+                </p>
+              </div>
+
+              <div className="mb-6">
+                <div className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-green-50 border border-green-200 text-green-700 text-sm font-bold mb-4 shadow-sm">
                   <span className="relative flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                   </span>
-                  Free Forever • No Credit Card Required
+                  Free Forever • No Credit Card
                 </div>
-                <h1 className="text-3xl font-bold text-slate-900 mb-2">
-                  Create your free account
+                <h1 className="text-3xl md:text-3xl font-bold text-slate-900 mb-3 leading-tight">
+                  Start crushing your goals today
                 </h1>
-                <p className="text-slate-600">
-                  Start improving your grades in under 60 seconds
+                <p className="text-slate-600 text-base md:text-lg leading-relaxed">
+                  Join 10,000+ students using AI to boost their grades
                 </p>
+              </div>
+
+              {/* Mobile Benefits */}
+              <div className="lg:hidden mb-6 space-y-3">
+                {[
+                  { icon: <Sparkles className="w-4 h-4" />, text: '24/7 AI tutor' },
+                  { icon: <Zap className="w-4 h-4" />, text: 'Instant essay grading' },
+                  { icon: <Shield className="w-4 h-4" />, text: 'Private & secure' }
+                ].map((benefit, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                      {benefit.icon}
+                    </div>
+                    <p className="text-slate-700 font-medium text-sm">{benefit.text}</p>
+                  </div>
+                ))}
               </div>
 
               {error && (
@@ -156,62 +197,62 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, initialMode = 'login
               )}
 
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700 ml-1">Full Name</label>
+                <div className="space-y-1.5">
+                  <label className="text-sm font-bold text-slate-700 ml-1">Full Name</label>
                   <div className="relative">
-                    <User className="absolute left-4 top-3.5 w-5 h-5 text-slate-400" />
+                    <User className="absolute left-4 top-4 w-5 h-5 text-slate-400" />
                     <input
                       type="text"
                       placeholder="John Doe"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-slate-900 hover:border-slate-300"
+                      className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-slate-900 text-base hover:border-slate-300"
                       required
                     />
                   </div>
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700 ml-1">Email Address</label>
+                <div className="space-y-1.5">
+                  <label className="text-sm font-bold text-slate-700 ml-1">Email Address</label>
                   <div className="relative">
-                    <Mail className="absolute left-4 top-3.5 w-5 h-5 text-slate-400" />
+                    <Mail className="absolute left-4 top-4 w-5 h-5 text-slate-400" />
                     <input
                       type="email"
                       placeholder="student@university.edu"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-slate-900 hover:border-slate-300"
+                      className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-slate-900 text-base hover:border-slate-300"
                       required
                     />
                   </div>
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700 ml-1">Password</label>
+                <div className="space-y-1.5">
+                  <label className="text-sm font-bold text-slate-700 ml-1">Password</label>
                   <div className="relative">
-                    <Lock className="absolute left-4 top-3.5 w-5 h-5 text-slate-400" />
+                    <Lock className="absolute left-4 top-4 w-5 h-5 text-slate-400" />
                     <input
                       type="password"
                       placeholder="At least 8 characters"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-slate-900 hover:border-slate-300"
+                      className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-slate-900 text-base hover:border-slate-300"
                       required
                       minLength={8}
                     />
                   </div>
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700 ml-1">Phone Number (Optional)</label>
+                <div className="space-y-1.5">
+                  <label className="text-sm font-bold text-slate-700 ml-1">Phone Number (Optional)</label>
                   <div className="relative">
-                    <Phone className="absolute left-4 top-3.5 w-5 h-5 text-slate-400" />
+                    <Phone className="absolute left-4 top-4 w-5 h-5 text-slate-400" />
                     <input
                       type="tel"
                       placeholder="(555) 123-4567"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-slate-900 hover:border-slate-300"
+                      className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-slate-900 text-base hover:border-slate-300"
                     />
                   </div>
                 </div>
@@ -219,21 +260,33 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, initialMode = 'login
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-500/30 transition-all transform active:scale-[0.98] flex items-center justify-center gap-2 mt-6 text-lg"
+                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-5 rounded-xl shadow-lg shadow-blue-500/30 transition-all transform active:scale-[0.98] flex items-center justify-center gap-2 mt-6 text-lg"
                 >
                   {isLoading ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <Loader2 className="w-6 h-6 animate-spin" />
                   ) : (
                     <>
-                      Start Learning Smarter
-                      <ArrowRight className="w-5 h-5" />
+                      Get Started Free
+                      <ArrowRight className="w-6 h-6" />
                     </>
                   )}
                 </button>
 
+                <div className="flex items-center justify-center gap-4 mt-4">
+                  <div className="flex items-center gap-1.5 text-xs text-slate-600">
+                    <Shield className="w-4 h-4 text-green-600" />
+                    <span className="font-medium">Secure signup</span>
+                  </div>
+                  <div className="w-1 h-1 bg-slate-300 rounded-full"></div>
+                  <div className="flex items-center gap-1.5 text-xs text-slate-600">
+                    <Check className="w-4 h-4 text-green-600" />
+                    <span className="font-medium">No credit card</span>
+                  </div>
+                </div>
+
                 <p className="text-xs text-slate-500 text-center mt-4">
                   By signing up, you agree to our{' '}
-                  <Link to="/terms" className="text-blue-600 hover:underline">Terms of Service</Link>
+                  <Link to="/terms" className="text-blue-600 hover:underline">Terms</Link>
                   {' '}and{' '}
                   <Link to="/privacy" className="text-blue-600 hover:underline">Privacy Policy</Link>
                 </p>
@@ -252,28 +305,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, initialMode = 'login
                   >
                     Log in
                   </button>
-                </p>
-              </div>
-
-              {/* Mobile Social Proof */}
-              <div className="lg:hidden mt-8 pt-6 border-t border-slate-100">
-                <div className="flex items-center justify-center gap-4 mb-4">
-                  <div className="flex -space-x-2">
-                    <img src="https://images.pexels.com/photos/3762800/pexels-photo-3762800.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&dpr=2" alt="Student" className="w-8 h-8 rounded-full border-2 border-white object-cover" />
-                    <img src="https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&dpr=2" alt="Student" className="w-8 h-8 rounded-full border-2 border-white object-cover" />
-                    <img src="https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&dpr=2" alt="Student" className="w-8 h-8 rounded-full border-2 border-white object-cover" />
-                  </div>
-                  <div className="flex items-center gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
-                    ))}
-                  </div>
-                </div>
-                <p className="text-sm text-slate-700 italic text-center mb-2">
-                  "Lockin AI helped me raise my GPA by 0.8 points in one semester. The AI tutor is like having a professor available 24/7!"
-                </p>
-                <p className="text-xs text-slate-500 text-center font-semibold">
-                  — Sarah M., Stanford University
                 </p>
               </div>
             </div>
