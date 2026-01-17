@@ -81,10 +81,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, initialMode = 'login
               <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl"></div>
 
               <div className="relative z-10">
-                <div className="h-12 w-auto mb-12">
-                  <Logo showText={true} />
-                </div>
-
                 <h2 className="text-3xl font-bold mb-4 leading-tight">
                   Join 10,000+ students crushing their goals
                 </h2>
