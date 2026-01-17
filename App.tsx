@@ -686,7 +686,8 @@ const App: React.FC = () => {
             } />
           ) : (
             <>
-              <Route path="/login" element={<LoginScreen onLogin={handleLogin} />} />
+              <Route path="/login" element={<LoginScreen onLogin={handleLogin} initialMode="login" />} />
+              <Route path="/signup" element={<LoginScreen onLogin={handleLogin} initialMode="signup" />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/terms" element={<TermsOfService />} />
               <Route path="/" element={<LandingPage />} />

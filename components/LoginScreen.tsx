@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Lock, Mail, User, Loader2, AlertCircle, Phone, Check, Star, Zap, Shield, Sparkles } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import Logo from './Logo';
 
 interface LoginScreenProps {
   onLogin: () => void;
+  initialMode?: 'login' | 'signup';
 }
 
-const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
+const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, initialMode = 'login' }) => {
   const location = useLocation();
-  const [isLogin, setIsLogin] = useState(true);
+  const navigate = useNavigate();
+  const [isLogin, setIsLogin] = useState(initialMode === 'login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -248,6 +250,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
                     onClick={() => {
                       setIsLogin(true);
                       setError(null);
+                      navigate('/login');
                     }}
                     className="text-blue-600 font-bold hover:underline"
                   >
@@ -354,6 +357,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
                   onClick={() => {
                     setIsLogin(false);
                     setError(null);
+                    navigate('/signup');
                   }}
                   className="text-blue-600 font-bold hover:underline"
                 >
