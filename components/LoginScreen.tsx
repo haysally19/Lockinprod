@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, Lock, Mail, Loader2, AlertCircle, Star, Sparkles, Check, Shield, Zap } from 'lucide-react';
+import { ArrowRight, Lock, Mail, Loader2, AlertCircle, Star, Sparkles, Check, Shield, Zap, PlayCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import Logo from './Logo';
 
@@ -29,7 +29,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, initialMode = 'login
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.origin // Ensure this matches your Supabase Redirect URLs
+          redirectTo: window.location.origin
         }
       });
       if (error) throw error;
@@ -52,21 +52,15 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, initialMode = 'login
         if (error) throw error;
         onLogin();
       } else {
-        // OPTIMIZATION: Removed 'options: data: { full_name }' to reduce friction.
-        // Collect name in onboarding instead.
+        // Optimized Signup: Email + Password only
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
         });
-        
         if (error) throw error;
-
-        // CRITICAL: Ensure 'Confirm Email' is disabled in Supabase settings
-        // so data.session is available immediately.
         if (data.session) {
           onLogin();
         } else {
-          // Fallback if email confirmation is arguably still on
           setError('Please check your email to confirm your account.');
         }
       }
@@ -79,157 +73,200 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, initialMode = 'login
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 flex flex-col justify-center items-center p-4 md:p-6 relative">
-      <div className={`w-full ${isLogin ? 'max-w-md' : 'max-w-5xl'} relative z-10 animate-fade-in-up`}>
-        {!isLogin ? (
-          <div className="grid lg:grid-cols-2 gap-8 bg-white rounded-3xl shadow-2xl border border-slate-200/80 overflow-hidden">
-            {/* Left Side - Simplified for higher conversion focus */}
-            <div className="hidden lg:flex flex-col justify-between bg-gradient-to-br from-blue-600 to-indigo-800 p-12 text-white relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
-              <div className="relative z-10">
-                <h2 className="text-3xl font-bold mb-4">You're one step away.</h2>
-                <p className="text-blue-100 text-lg mb-8">Join 10,000+ students already saving 10+ hours a week.</p>
-                <div className="space-y-4">
-                  {[
-                    'Instant Essay Grading',
-                    'Automatic Study Guides',
-                    'Syllabus Organizer'
-                  ].map((txt, i) => (
-                    <div key={i} className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center"><Check className="w-4 h-4"/></div>
-                        <span className="font-medium">{txt}</span>
+    <div className="min-h-screen bg-[#0F172A] flex flex-col justify-center items-center p-4 md:p-6 relative overflow-hidden font-sans">
+      
+      {/* Dynamic Background Effects */}
+      <div className="absolute top-[-20%] left-[-10%] w-[800px] h-[800px] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none animate-pulse"></div>
+      <div className="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] bg-indigo-600/20 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute top-[40%] left-[50%] -translate-x-1/2 w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[80px] pointer-events-none"></div>
+
+      <div className={`w-full ${isLogin ? 'max-w-md' : 'max-w-6xl'} relative z-10 transition-all duration-500 ease-in-out`}>
+        
+        <div className="bg-white/95 backdrop-blur-xl rounded-[32px] shadow-2xl overflow-hidden border border-white/20 grid lg:grid-cols-12 min-h-[600px]">
+            
+            {/* Left Side (Visuals) - Only visible on Signup or large Login */}
+            <div className={`hidden lg:flex ${isLogin ? 'lg:col-span-0 hidden' : 'lg:col-span-5'} flex-col relative bg-slate-900 text-white p-10 overflow-hidden`}>
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-indigo-700 to-slate-900 opacity-90 z-0"></div>
+                
+                {/* Abstract Shapes */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-400/20 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2"></div>
+
+                <div className="relative z-10 h-full flex flex-col justify-between">
+                    <div>
+                        <div className="flex items-center gap-2 mb-8 opacity-80">
+                            <Sparkles className="w-5 h-5 text-blue-300" />
+                            <span className="font-bold tracking-wide text-sm uppercase text-blue-100">AI Student Assistant</span>
+                        </div>
+                        
+                        <h2 className="text-4xl font-extrabold leading-tight mb-6">
+                            Study smarter,<br/>
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-cyan-200">not harder.</span>
+                        </h2>
+                        
+                        <p className="text-blue-100/80 text-lg leading-relaxed mb-8">
+                            Join 10,000+ students using Lockin AI to automate their summaries, grading, and scheduling.
+                        </p>
+
+                        <div className="space-y-5">
+                            <FeatureRow icon={<Zap className="w-4 h-4 text-amber-300"/>} text="Instant Essay Grading" />
+                            <FeatureRow icon={<PlayCircle className="w-4 h-4 text-emerald-300"/>} text="Automated Study Guides" />
+                            <FeatureRow icon={<Shield className="w-4 h-4 text-purple-300"/>} text="Syllabus Organization" />
+                        </div>
                     </div>
-                  ))}
+
+                    {/* Social Proof Widget */}
+                    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/10 transform hover:scale-105 transition-transform duration-300 cursor-default">
+                        <div className="flex items-center gap-4 mb-3">
+                            <div className="flex -space-x-3">
+                                {[1,2,3].map(i => (
+                                    <div key={i} className="w-10 h-10 rounded-full border-2 border-slate-900 bg-slate-800 flex items-center justify-center text-xs overflow-hidden">
+                                        <img src={`https://i.pravatar.cc/100?img=${10+i}`} alt="User" className="w-full h-full object-cover" />
+                                    </div>
+                                ))}
+                                <div className="w-10 h-10 rounded-full border-2 border-slate-900 bg-blue-600 flex items-center justify-center text-xs font-bold text-white">
+                                    +10k
+                                </div>
+                            </div>
+                            <div>
+                                <div className="flex text-amber-400 mb-0.5">
+                                    <Star className="w-3.5 h-3.5 fill-current" />
+                                    <Star className="w-3.5 h-3.5 fill-current" />
+                                    <Star className="w-3.5 h-3.5 fill-current" />
+                                    <Star className="w-3.5 h-3.5 fill-current" />
+                                    <Star className="w-3.5 h-3.5 fill-current" />
+                                </div>
+                                <p className="text-xs font-medium text-blue-100">Loved by students at Ivy Leagues</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
-              <div className="relative z-10 mt-12 p-4 bg-white/10 backdrop-blur rounded-xl border border-white/10">
-                   <div className="flex text-yellow-400 mb-2">
-                       {[1,2,3,4,5].map(i=><Star key={i} className="w-4 h-4 fill-current"/>)}
-                   </div>
-                   <p className="text-sm italic">"I created my account 5 mins before my exam and the AI summary literally saved my grade."</p>
-                   <p className="text-xs font-bold mt-2 opacity-80">- Alex T., UCLA</p>
-              </div>
             </div>
 
-            {/* Right Side - The High Conversion Form */}
-            <div className="p-8 md:p-12 flex flex-col justify-center">
-              <div className="text-center mb-8">
-                  <h1 className="text-2xl font-bold text-slate-900">Create your free account</h1>
-                  <p className="text-slate-500 mt-2">No credit card required.</p>
-              </div>
+            {/* Right Side (Form) */}
+            <div className={`col-span-12 ${!isLogin ? 'lg:col-span-7' : ''} p-8 md:p-12 lg:p-16 bg-white flex flex-col justify-center`}>
+                <div className="max-w-md mx-auto w-full">
+                    <div className="text-center mb-10">
+                        <div className="inline-block mb-4">
+                             <Logo showText={false} />
+                        </div>
+                        <h1 className="text-3xl font-extrabold text-slate-900 mb-2">
+                            {isLogin ? 'Welcome back' : 'Create your account'}
+                        </h1>
+                        <p className="text-slate-500">
+                            {isLogin ? 'Enter your details to access your workspace.' : 'Get started for free. No credit card required.'}
+                        </p>
+                    </div>
 
-              {/* SOCIAL PROOF / GOOGLE AUTH */}
-              <button 
-                onClick={handleGoogleLogin}
-                className="w-full py-3 px-4 border border-slate-200 rounded-xl flex items-center justify-center gap-3 hover:bg-slate-50 transition-all font-medium text-slate-700 mb-6 bg-white"
-              >
-                <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />
-                Continue with Google
-              </button>
+                    {/* Google Login Button */}
+                    <button
+                        onClick={handleGoogleLogin}
+                        className="w-full h-14 bg-white border-2 border-slate-100 hover:border-slate-200 hover:bg-slate-50 text-slate-700 font-bold rounded-2xl transition-all duration-200 flex items-center justify-center gap-3 group relative overflow-hidden"
+                    >
+                        <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                        <span>Continue with Google</span>
+                    </button>
 
-              <div className="relative flex py-2 items-center mb-6">
-                <div className="flex-grow border-t border-slate-200"></div>
-                <span className="flex-shrink mx-4 text-slate-400 text-xs font-bold uppercase">Or with email</span>
-                <div className="flex-grow border-t border-slate-200"></div>
-              </div>
+                    <div className="relative flex py-6 items-center">
+                        <div className="flex-grow border-t border-slate-100"></div>
+                        <span className="flex-shrink mx-4 text-slate-400 text-xs font-bold uppercase tracking-wider">Or email</span>
+                        <div className="flex-grow border-t border-slate-100"></div>
+                    </div>
 
-              {error && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-100 text-red-600 rounded-lg text-sm flex gap-2">
-                  <AlertCircle className="w-4 h-4 mt-0.5" /> {error}
+                    {error && (
+                        <div className="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 rounded-xl text-sm flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
+                            <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                            <p>{error}</p>
+                        </div>
+                    )}
+
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-wide">Email Address</label>
+                            <div className="relative group">
+                                <Mail className="absolute left-4 top-4 w-5 h-5 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+                                <input
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="w-full pl-12 pr-4 h-14 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-medium text-slate-900 placeholder:text-slate-400"
+                                    placeholder="student@university.edu"
+                                    required
+                                    autoFocus={!isLogin}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-wide">Password</label>
+                            <div className="relative group">
+                                <Lock className="absolute left-4 top-4 w-5 h-5 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+                                <input
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="w-full pl-12 pr-4 h-14 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-medium text-slate-900 placeholder:text-slate-400"
+                                    placeholder={isLogin ? "••••••••" : "Create a password (8+ chars)"}
+                                    required
+                                    minLength={8}
+                                />
+                            </div>
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={isLoading}
+                            className="w-full h-14 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-2xl shadow-lg shadow-blue-500/30 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2 mt-2"
+                        >
+                            {isLoading ? (
+                                <Loader2 className="w-6 h-6 animate-spin" />
+                            ) : (
+                                <>
+                                    {isLogin ? 'Sign In' : 'Get Started Free'}
+                                    <ArrowRight className="w-5 h-5" />
+                                </>
+                            )}
+                        </button>
+                    </form>
+
+                    <div className="mt-8 text-center">
+                        <p className="text-slate-500 text-sm">
+                            {isLogin ? "Don't have an account?" : "Already have an account?"}
+                            <button
+                                onClick={() => {
+                                    setIsLogin(!isLogin);
+                                    setError(null);
+                                    if(isLogin) navigate('/signup');
+                                    else navigate('/login');
+                                }}
+                                className="ml-2 text-blue-600 font-bold hover:text-blue-700 transition-colors"
+                            >
+                                {isLogin ? 'Sign up for free' : 'Log in'}
+                            </button>
+                        </p>
+                    </div>
                 </div>
-              )}
-
-              <form onSubmit={handleSubmit} className="space-y-4">
-                {/* REMOVED NAME FIELD FOR HIGHER CONVERSION */}
-                <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 ml-1">Email</label>
-                    <input
-                      type="email"
-                      autoFocus // Crucial for UX
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all font-medium"
-                      placeholder="student@university.edu"
-                      required
-                    />
-                </div>
-
-                <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 ml-1">Password</label>
-                    <input
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all font-medium"
-                      placeholder="8+ characters"
-                      required
-                      minLength={8}
-                    />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all transform active:scale-[0.98] flex items-center justify-center gap-2 mt-4"
-                >
-                  {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Get Started <ArrowRight className="w-5 h-5" /></>}
-                </button>
-              </form>
-
-              <p className="text-center text-xs text-slate-400 mt-6">
-                By joining, you agree to our <Link to="/terms" className="underline">Terms</Link> and <Link to="/privacy" className="underline">Privacy Policy</Link>.
-              </p>
-              
-              <div className="mt-6 text-center">
-                  <span className="text-slate-500 text-sm">Already have an account? </span>
-                  <button onClick={() => { setIsLogin(true); setError(null); navigate('/login'); }} className="text-blue-600 font-bold hover:underline text-sm">Log in</button>
-              </div>
             </div>
-          </div>
-        ) : (
-          /* Login View (Kept mostly the same, added Google Auth) */
-          <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-8 md:p-10">
-             <div className="flex justify-center mb-6">
-               <Logo showText={true} />
-             </div>
-             <h1 className="text-2xl font-bold text-slate-900 text-center mb-6">Welcome Back</h1>
-             
-             <button 
-                onClick={handleGoogleLogin}
-                className="w-full py-3 px-4 border border-slate-200 rounded-xl flex items-center justify-center gap-3 hover:bg-slate-50 transition-all font-medium text-slate-700 mb-6"
-              >
-                <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />
-                Sign in with Google
-              </button>
+        </div>
+        
+        {/* Footer links */}
+        <div className="mt-8 text-center space-x-6 text-sm text-slate-400 font-medium">
+            <Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <Link to="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
+        </div>
 
-             <div className="relative flex py-2 items-center mb-6">
-                <div className="flex-grow border-t border-slate-200"></div>
-                <span className="flex-shrink mx-4 text-slate-400 text-xs font-bold uppercase">Or</span>
-                <div className="flex-grow border-t border-slate-200"></div>
-              </div>
-
-             <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                   <label className="text-xs font-bold text-slate-700 ml-1">Email</label>
-                   <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none" required />
-                </div>
-                <div>
-                   <label className="text-xs font-bold text-slate-700 ml-1">Password</label>
-                   <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none" required />
-                </div>
-                <button type="submit" disabled={isLoading} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2">
-                    {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Sign In"}
-                </button>
-             </form>
-             <div className="mt-6 text-center">
-                  <span className="text-slate-500 text-sm">New here? </span>
-                  <button onClick={() => { setIsLogin(false); setError(null); navigate('/signup'); }} className="text-blue-600 font-bold hover:underline text-sm">Create account</button>
-              </div>
-          </div>
-        )}
       </div>
     </div>
   );
 };
+
+const FeatureRow: React.FC<{icon: React.ReactNode, text: string}> = ({icon, text}) => (
+    <div className="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/5">
+        <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
+            {icon}
+        </div>
+        <span className="font-medium text-blue-50">{text}</span>
+    </div>
+);
 
 export default LoginScreen;
