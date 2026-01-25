@@ -1,6 +1,6 @@
 import React from 'react';
 import { Course } from '../types';
-import { LayoutDashboard, Plus, BookCopy, Calendar, Settings, Zap, Flame, X, Sparkles } from 'lucide-react';
+import { LayoutDashboard, Plus, BookCopy, Calendar, Settings, Zap, Flame, X, Sparkles, Camera } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import Logo from './Logo';
 
@@ -102,6 +102,18 @@ const Sidebar: React.FC<SidebarProps> = ({
           >
             <LayoutDashboard className="w-4 h-4" />
             <span>Dashboard</span>
+          </Link>
+          <Link
+            to="/solver"
+            onClick={onClose}
+            className={`flex items-center gap-3 px-3 py-2 rounded-xl transition-all font-bold text-xs ${
+              currentPath === '/solver'
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' 
+                : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
+            }`}
+          >
+            <Camera className="w-4 h-4" />
+            <span>Camera Solver</span>
           </Link>
           <Link
             to="/classes"
