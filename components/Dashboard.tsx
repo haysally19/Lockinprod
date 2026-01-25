@@ -1,7 +1,7 @@
 import React from 'react';
 import { Course } from '../types';
 import { Link } from 'react-router-dom';
-import { BookOpen, Clock, CheckCircle2, AlertCircle, BarChart3, GraduationCap, ArrowRight, Flame, Zap, Plus, ChevronRight } from 'lucide-react';
+import { BookOpen, Clock, CheckCircle2, BarChart3, ArrowRight, Flame, Zap, Plus, ChevronRight, FileText } from 'lucide-react';
 import OnboardingChecklist from './OnboardingChecklist';
 
 interface DashboardProps {
@@ -22,22 +22,22 @@ const Dashboard: React.FC<DashboardProps> = ({ courses, streak, userTier, tierLo
     .filter(a => !a.completed)
     .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
 
-  const completedCount = allAssignments.filter(a => a.completed).length;
-  const totalTasks = allAssignments.length;
-  const completionRate = totalTasks > 0 ? Math.round((completedCount / totalTasks) * 100) : 0;
-  
-  const coursePerformance = courses.map(course => {
-    const gradedAssignments = course.assignments.filter(a => a.grade !== undefined);
-    const avg = gradedAssignments.length > 0
-      ? gradedAssignments.reduce((sum, a) => sum + (a.grade || 0), 0) / gradedAssignments.length
-      : 0; 
+  const totalNotes = courses.reduce((sum, c) => sum + c.notes.length, 0);
+  const totalDocs = courses.reduce((sum, c) => sum + (c.documents?.length || 0), 0);
+  const totalTasks = pendingAssignments.length;
+
+  const studyMaterials = courses.map(course => {
+    const noteCount = course.notes.length;
+    const docCount = course.documents?.length || 0;
+    const totalMaterials = noteCount + docCount;
+
     return {
       name: course.name,
       shortName: course.name.length > 12 ? course.name.substring(0, 10) + '...' : course.name,
-      score: Math.round(avg),
+      count: totalMaterials,
       color: course.color
     };
-  }).filter(c => c.score > 0);
+  }).filter(c => c.count > 0);
 
   return (
     <div className="h-full bg-[#f8fafc] overflow-y-auto no-scrollbar scroll-smooth">
@@ -85,75 +85,75 @@ const Dashboard: React.FC<DashboardProps> = ({ courses, streak, userTier, tierLo
 
         {/* Top Level Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
-            <StatCard 
-                icon={CheckCircle2} 
-                title="Mastery" 
-                value={`${completionRate}%`} 
-                trend={completionRate > 80 ? "+ Good" : "Keep going"}
-                color="indigo" 
-                delay="delay-[0ms]" 
+            <StatCard
+                icon={FileText}
+                title="Notes"
+                value={totalNotes}
+                trend="Saved"
+                color="indigo"
+                delay="delay-[0ms]"
             />
-            <StatCard 
-                icon={GraduationCap} 
-                title="Deadlines" 
-                value={pendingAssignments.length} 
-                trend="Upcoming"
-                color="rose" 
-                delay="delay-[100ms]" 
+            <StatCard
+                icon={CheckCircle2}
+                title="Tasks"
+                value={totalTasks}
+                trend="Pending"
+                color="rose"
+                delay="delay-[100ms]"
             />
-            <StatCard 
-                icon={BookOpen} 
-                title="Enrolled" 
-                value={courses.length} 
+            <StatCard
+                icon={BookOpen}
+                title="Classes"
+                value={courses.length}
                 trend="Active"
-                color="amber" 
-                delay="delay-[200ms]" 
+                color="amber"
+                delay="delay-[200ms]"
             />
-            <StatCard 
-                icon={Flame} 
-                title="Streak" 
-                value={`${streak}`} 
+            <StatCard
+                icon={Flame}
+                title="Streak"
+                value={`${streak}`}
                 trend="Days"
-                color="orange" 
-                delay="delay-[300ms]" 
-                streakActive={streak > 0} 
+                color="orange"
+                delay="delay-[300ms]"
+                streakActive={streak > 0}
             />
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
-          {/* Chart Section */}
+          {/* Study Materials Chart */}
           <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm xl:col-span-2 flex flex-col min-h-[300px] animate-in slide-in-from-bottom-4 duration-700">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-bold text-slate-950 flex items-center gap-2">
                     <BarChart3 className="w-5 h-5 text-indigo-600" />
-                    Performance
+                    Study Materials
                 </h3>
                 <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-slate-50 px-3 py-1 rounded-full border border-slate-100 hidden md:block">
-                    Average Grades
+                    Notes & Docs
                 </div>
               </div>
-              
+
               <div className="flex-1 w-full flex items-end justify-around gap-2 md:gap-6 px-2 pb-2 relative">
                   {/* Grid Lines */}
                   <div className="absolute inset-0 top-0 flex flex-col justify-between pointer-events-none pb-12 z-0">
-                    {[100, 75, 50, 25, 0].map(val => (
+                    {[20, 15, 10, 5, 0].map(val => (
                         <div key={val} className="flex items-center gap-4">
-                           <span className="text-[10px] font-bold text-slate-300 w-6 md:w-8 text-right tracking-tighter">{val}%</span>
+                           <span className="text-[10px] font-bold text-slate-300 w-6 md:w-8 text-right tracking-tighter">{val}</span>
                            <div className="flex-1 h-px bg-slate-50 border-t border-dashed border-slate-200"></div>
                         </div>
                     ))}
                   </div>
 
-                  {coursePerformance.length > 0 ? (
-                      coursePerformance.map((entry, index) => (
+                  {studyMaterials.length > 0 ? (
+                      studyMaterials.map((entry, index) => (
                         <div key={index} className="flex flex-col items-center gap-2 group w-full max-w-[60px] md:max-w-[80px] z-10 h-full justify-end relative">
                           <div className="relative w-full bg-slate-100 rounded-t-lg flex-1 flex items-end overflow-visible">
-                            <div 
+                            <div
                                 className={`w-full rounded-t-lg transition-all duration-1000 ease-spring shadow-sm opacity-90 group-hover:opacity-100 ${entry.color}`}
-                                style={{ height: `${entry.score}%` }}
+                                style={{ height: `${Math.min((entry.count / 20) * 100, 100)}%` }}
                             >
                                 <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold py-1 px-2 rounded-md opacity-0 group-hover:opacity-100 transition-all transform group-hover:-translate-y-1 shadow-xl z-20 whitespace-nowrap hidden md:block">
-                                    {entry.score}%
+                                    {entry.count} items
                                 </div>
                             </div>
                           </div>
@@ -164,7 +164,7 @@ const Dashboard: React.FC<DashboardProps> = ({ courses, streak, userTier, tierLo
                       ))
                   ) : (
                       <div className="w-full h-full flex flex-col items-center justify-center text-slate-300 z-10">
-                          <p className="font-bold text-xs tracking-widest uppercase opacity-40">No grading data</p>
+                          <p className="font-bold text-xs tracking-widest uppercase opacity-40">No study materials yet</p>
                       </div>
                   )}
               </div>

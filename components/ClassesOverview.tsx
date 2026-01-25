@@ -11,23 +11,17 @@ interface ClassesOverviewProps {
 
 const ClassesOverview: React.FC<ClassesOverviewProps> = ({ courses, onAddCourse, onDeleteCourse }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState<'name' | 'grade' | 'subject'>('name');
+  const [sortBy, setSortBy] = useState<'name' | 'notes' | 'subject'>('name');
 
   // Filter and Sort Logic
-  const getGrade = (c: Course) => {
-    const graded = c.assignments.filter(x => x.grade !== undefined);
-    if (graded.length === 0) return -1;
-    return graded.reduce((acc, curr) => acc + (curr.grade || 0), 0) / graded.length;
-  };
-
-  const filteredCourses = courses.filter(course => 
+  const filteredCourses = courses.filter(course =>
     course.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     course.subject.toLowerCase().includes(searchTerm.toLowerCase())
   ).sort((a, b) => {
     if (sortBy === 'name') return a.name.localeCompare(b.name);
     if (sortBy === 'subject') return a.subject.localeCompare(b.subject);
-    if (sortBy === 'grade') {
-      return getGrade(b) - getGrade(a); // Descending grade
+    if (sortBy === 'notes') {
+      return b.notes.length - a.notes.length;
     }
     return 0;
   });
@@ -65,13 +59,13 @@ const ClassesOverview: React.FC<ClassesOverviewProps> = ({ courses, onAddCourse,
                         {/* Sort */}
                         <div className="relative flex-1 sm:w-32 group">
                             <Filter className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-3 h-3 group-focus-within:text-blue-500 transition-colors" />
-                            <select 
+                            <select
                                 value={sortBy}
                                 onChange={(e) => setSortBy(e.target.value as any)}
                                 className="w-full appearance-none pl-8 pr-7 py-1.5 bg-slate-100 border-transparent focus:bg-white border focus:border-blue-500/50 rounded-lg text-xs md:text-sm text-slate-700 font-medium focus:ring-2 focus:ring-blue-500/20 cursor-pointer transition-all outline-none"
                             >
                                 <option value="name">Name</option>
-                                <option value="grade">Grade</option>
+                                <option value="notes">Notes</option>
                                 <option value="subject">Subject</option>
                             </select>
                             <ArrowUpDown className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-3 h-3 pointer-events-none" />

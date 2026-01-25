@@ -50,12 +50,12 @@ const ClassView: React.FC<ClassViewProps> = ({
 
   const tabs: { id: TabView; label: string; icon: any }[] = [
     { id: 'overview', label: 'Overview', icon: Layout },
-    { id: 'study', label: 'Study', icon: BrainCircuit },
     { id: 'chat', label: 'AI Tutor', icon: MessageSquare },
-    { id: 'notes', label: 'Notes', icon: FileText },
+    { id: 'study', label: 'Study', icon: BrainCircuit },
     { id: 'grader', label: 'Grader', icon: GraduationCap },
-    { id: 'assignments', label: 'Tasks', icon: CheckSquare },
+    { id: 'notes', label: 'Notes', icon: FileText },
     { id: 'docs', label: 'Library', icon: Files },
+    { id: 'assignments', label: 'Tasks', icon: CheckSquare },
   ];
 
   const handleAskAI = (question: string) => {

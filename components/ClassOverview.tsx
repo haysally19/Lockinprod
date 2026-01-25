@@ -11,21 +11,11 @@ interface ClassOverviewProps {
 const ClassOverview: React.FC<ClassOverviewProps> = ({ course, onNavigate, onAskAI }) => {
   // Data processing
   const pendingAssignments = course.assignments.filter(a => !a.completed);
-  const gradedAssignments = course.assignments.filter(a => a.grade !== undefined);
-  const avgGrade = gradedAssignments.length > 0
-    ? Math.round(gradedAssignments.reduce((acc, curr) => acc + (curr.grade || 0), 0) / gradedAssignments.length)
-    : null;
+  const totalDocs = course.documents?.length || 0;
 
   const recentNote = course.notes.length > 0
     ? course.notes.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]
     : null;
-    
-  const getGradeColor = (grade: number | null) => {
-    if (grade === null) return 'text-slate-500';
-    if (grade >= 90) return 'text-emerald-600 bg-emerald-50';
-    if (grade >= 80) return 'text-blue-600 bg-blue-50';
-    return 'text-amber-600 bg-amber-50';
-  };
 
   const sampleQuestions = [
     `Explain the main theme of "${course.name}"`,
@@ -40,14 +30,14 @@ const ClassOverview: React.FC<ClassOverviewProps> = ({ course, onNavigate, onAsk
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex justify-between items-start">
-                    <div className="p-2 bg-blue-100 rounded-lg text-blue-600"><GraduationCap className="w-6 h-6" /></div>
-                    <span className={`px-2 py-1 rounded-full text-xs font-bold ${getGradeColor(avgGrade)}`}>
-                        {avgGrade ? 'Est. Grade' : 'No Grades'}
+                    <div className="p-2 bg-blue-100 rounded-lg text-blue-600"><MessageSquare className="w-6 h-6" /></div>
+                    <span className="px-2 py-1 rounded-full text-xs font-bold text-blue-600 bg-blue-50">
+                        AI Ready
                     </span>
                 </div>
                 <div className="mt-4">
-                    <h3 className="text-3xl font-bold text-slate-800">{avgGrade ? `${avgGrade}%` : 'N/A'}</h3>
-                    <p className="text-sm text-slate-400 font-medium">Average Score</p>
+                    <h3 className="text-3xl font-bold text-slate-800">{totalDocs}</h3>
+                    <p className="text-sm text-slate-400 font-medium">Study Materials</p>
                 </div>
             </div>
             <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
