@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, Type, Chat } from "@google/genai";
 import { ClassSubject, EssayFeedback, Flashcard, QuizQuestion } from "../types";
 
@@ -229,4 +228,38 @@ export const generateQuiz = async (context: string, count: number = 5): Promise<
 
   const questions = JSON.parse(text.trim()) as QuizQuestion[];
   return questions.map((q, i) => ({ ...q, id: Date.now().toString() + i }));
+};
+
+// --- Vision / Camera Solver Feature ---
+
+export const solveWithVision = async (base64Image: string): Promise<string> => {
+  const ai = getClient();
+  
+  // Remove data URL prefix if present to get just the base64 string
+  const cleanBase64 = base64Image.split(',')[1] || base64Image;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-1.5-flash',
+      contents: [
+        {
+          role: 'user',
+          parts: [
+            { text: "Analyze this image. If it is a math problem, solve it step-by-step and provide the final answer. If it is a text question, answer it concisely. Use Markdown for formatting. Use LaTeX for math ($...$)." },
+            { 
+              inlineData: { 
+                mimeType: "image/jpeg", 
+                data: cleanBase64 
+              } 
+            }
+          ]
+        }
+      ]
+    });
+
+    return response.text || "I couldn't analyze that image. Please try again.";
+  } catch (error) {
+    console.error("Vision Error:", error);
+    throw new Error("Failed to process image. Please try again.");
+  }
 };
