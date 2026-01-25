@@ -13,6 +13,7 @@ import ClassView from './components/ClassView';
 import CalendarView from './components/CalendarView';
 import SettingsView from './components/SettingsView';
 import PaywallModal from './components/PaywallModal';
+import CameraSolver from './components/CameraSolver';
 import { Menu } from 'lucide-react';
 import Logo from './components/Logo';
 import { supabase } from './lib/supabase';
@@ -166,6 +167,7 @@ const MainLayout: React.FC<MainLayoutProps> = (props) => {
             <div className="flex-1 overflow-hidden relative">
                 <Routes>
                 <Route path="/" element={<Dashboard courses={props.courses} streak={props.streak} userTier={props.userTier} tierLoaded={props.tierLoaded} onUpgrade={props.onUpgrade} onAddCourse={props.onAddCourse} />} />
+                <Route path="/solver" element={<CameraSolver />} />
                 <Route
                     path="/classes"
                     element={
