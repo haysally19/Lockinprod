@@ -14,6 +14,7 @@ import CalendarView from './components/CalendarView';
 import SettingsView from './components/SettingsView';
 import PaywallModal from './components/PaywallModal';
 import CameraSolver from './components/CameraSolver';
+import QuickSolve from './components/QuickSolve';
 import { Menu } from 'lucide-react';
 import Logo from './components/Logo';
 import { supabase } from './lib/supabase';
@@ -167,6 +168,7 @@ const MainLayout: React.FC<MainLayoutProps> = (props) => {
             <div className="flex-1 overflow-hidden relative">
                 <Routes>
                 <Route path="/" element={<Dashboard courses={props.courses} streak={props.streak} userTier={props.userTier} tierLoaded={props.tierLoaded} onUpgrade={props.onUpgrade} onAddCourse={props.onAddCourse} />} />
+                <Route path="/quick-solve" element={<QuickSolve checkTokenLimit={props.checkTokenLimit} incrementTokenUsage={props.incrementTokenUsage} onNavigateToDashboard={() => window.location.hash = '#/'} />} />
                 <Route path="/solver" element={<CameraSolver />} />
                 <Route
                     path="/classes"

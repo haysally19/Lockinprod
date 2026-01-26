@@ -232,11 +232,15 @@ export const generateQuiz = async (context: string, count: number = 5): Promise<
 
 // --- Vision / Camera Solver Feature ---
 
-export const solveWithVision = async (base64Image: string): Promise<string> => {
+export const solveWithVision = async (base64Image: string, mode: 'nerd' | 'bro' = 'nerd'): Promise<string> => {
   const ai = getClient();
-  
+
   // Remove data URL prefix if present to get just the base64 string
   const cleanBase64 = base64Image.split(',')[1] || base64Image;
+
+  const modeInstruction = mode === 'bro'
+    ? ' Explain like you are talking to a friend - use simple, casual language and relatable examples. Avoid jargon.'
+    : ' Provide a detailed, technical explanation with proper terminology.';
 
   try {
     const response = await ai.models.generateContent({
@@ -245,12 +249,12 @@ export const solveWithVision = async (base64Image: string): Promise<string> => {
         {
           role: 'user',
           parts: [
-            { text: "Analyze this image. If it is a math problem, solve it step-by-step and provide the final answer. If it is a text question, answer it concisely. Use Markdown for formatting. Use LaTeX for math ($...$)." },
-            { 
-              inlineData: { 
-                mimeType: "image/jpeg", 
-                data: cleanBase64 
-              } 
+            { text: `Analyze this image. If it is a math problem, solve it step-by-step and provide the final answer. If it is a text question, answer it concisely. Use Markdown for formatting. Use LaTeX for math ($...$).${modeInstruction}` },
+            {
+              inlineData: {
+                mimeType: "image/jpeg",
+                data: cleanBase64
+              }
             }
           ]
         }
@@ -261,5 +265,24 @@ export const solveWithVision = async (base64Image: string): Promise<string> => {
   } catch (error) {
     console.error("Vision Error:", error);
     throw new Error("Failed to process image. Please try again.");
+  }
+};
+
+export const generateSimilarProblems = async (problemContext: string, count: number = 5): Promise<string> => {
+  const ai = getClient();
+
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-3-pro-preview',
+      contents: `Based on the following problem and solution, generate ${count} similar practice problems. Make them progressively slightly harder. Format each as a numbered list. Only provide the problems, not the solutions.
+
+Problem Context:
+${problemContext}`,
+    });
+
+    return response.text || "Could not generate practice problems.";
+  } catch (error) {
+    console.error("Generate problems error:", error);
+    throw new Error("Failed to generate practice problems.");
   }
 };

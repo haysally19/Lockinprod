@@ -90,13 +90,22 @@ const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         <nav className="px-3 py-4 space-y-1">
-          <h2 className="px-3 pb-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Main Menu</h2>
+          <Link
+            to="/quick-solve"
+            onClick={onClose}
+            className="relative overflow-hidden flex items-center justify-center gap-2 px-4 py-4 rounded-2xl transition-all font-bold text-sm bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-xl shadow-blue-500/30 mb-3 active:scale-95 group"
+          >
+            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMSkiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-30"></div>
+            <Sparkles className="w-5 h-5 animate-pulse relative z-10" />
+            <span className="relative z-10">Quick Solve</span>
+          </Link>
+          <h2 className="px-3 pb-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Navigation</h2>
           <Link
             to="/"
             onClick={onClose}
             className={`flex items-center gap-3 px-3 py-2 rounded-xl transition-all font-bold text-xs ${
-              currentPath === '/' 
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' 
+              currentPath === '/'
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
                 : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
             }`}
           >
@@ -108,7 +117,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             onClick={onClose}
             className={`flex items-center gap-3 px-3 py-2 rounded-xl transition-all font-bold text-xs ${
               currentPath === '/solver'
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' 
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
                 : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
             }`}
           >
