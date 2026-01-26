@@ -235,21 +235,80 @@ export const generateQuiz = async (context: string, count: number = 5): Promise<
 export const solveWithVision = async (base64Image: string, mode: 'nerd' | 'bro' = 'nerd'): Promise<string> => {
   const ai = getClient();
 
-  // Remove data URL prefix if present to get just the base64 string
   const cleanBase64 = base64Image.split(',')[1] || base64Image;
 
-  const modeInstruction = mode === 'bro'
-    ? ' Explain like you are talking to a friend - use simple, casual language and relatable examples. Avoid jargon.'
-    : ' Provide a detailed, technical explanation with proper terminology.';
+  const comprehensivePrompt = mode === 'bro' ? `
+You are an expert tutor helping a student understand their homework. Analyze this image carefully.
+
+**YOUR TASK:**
+1. **Identify** what type of problem or question this is (math, science, history, language, etc.)
+2. **Extract** all text, equations, diagrams, or relevant information from the image
+3. **Solve** the problem with a complete, step-by-step explanation
+4. **Provide** the final answer clearly
+
+**FORMATTING RULES:**
+- Use Markdown for all formatting
+- For math expressions, use LaTeX: $x = 5$ for inline, $$x = 5$$ for block equations
+- Use **bold** for important steps
+- Number your steps clearly
+- Keep language simple and friendly - explain like you're talking to a friend
+- Use relatable examples when helpful
+
+**STRUCTURE:**
+1. Start by stating what the problem is asking
+2. Show each step of your work
+3. Explain WHY you're doing each step
+4. End with a clear final answer
+
+Be thorough but conversational. Make sure the student really understands!
+` : `
+You are an elite academic tutor and problem solver. Analyze this image with precision.
+
+**YOUR TASK:**
+1. **Identify** the subject area and problem type (mathematics, physics, chemistry, biology, history, literature, computer science, etc.)
+2. **Extract** all relevant information: text, equations, diagrams, graphs, chemical structures, etc.
+3. **Solve** with rigorous step-by-step methodology
+4. **Verify** your answer and show your verification
+
+**FORMATTING REQUIREMENTS:**
+- Use Markdown for structure and emphasis
+- Mathematical notation MUST use LaTeX:
+  - Inline: $E = mc^2$
+  - Block: $$\\int_a^b f(x)dx$$
+- Use proper scientific notation and units
+- Bold key concepts and important results
+- Number all steps systematically
+
+**RESPONSE STRUCTURE:**
+## Problem Identification
+[State what is being asked]
+
+## Given Information
+[List all provided data, equations, constraints]
+
+## Solution Strategy
+[Outline your approach]
+
+## Step-by-Step Solution
+[Detailed work with explanations]
+
+## Final Answer
+[Clear, boxed or highlighted result with units]
+
+## Verification
+[Optional: Check your work]
+
+Be comprehensive, accurate, and pedagogically sound. Show professional-grade problem solving.
+`;
 
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-1.5-flash',
+      model: 'gemini-2.0-flash-exp',
       contents: [
         {
           role: 'user',
           parts: [
-            { text: `Analyze this image. If it is a math problem, solve it step-by-step and provide the final answer. If it is a text question, answer it concisely. Use Markdown for formatting. Use LaTeX for math ($...$).${modeInstruction}` },
+            { text: comprehensivePrompt },
             {
               inlineData: {
                 mimeType: "image/jpeg",
@@ -258,13 +317,26 @@ export const solveWithVision = async (base64Image: string, mode: 'nerd' | 'bro' 
             }
           ]
         }
-      ]
+      ],
+      config: {
+        temperature: 0.2,
+        topP: 0.95,
+        topK: 40,
+      }
     });
 
-    return response.text || "I couldn't analyze that image. Please try again.";
+    const result = response.text;
+    if (!result || result.trim().length === 0) {
+      throw new Error("Empty response from AI");
+    }
+
+    return result;
   } catch (error) {
-    console.error("Vision Error:", error);
-    throw new Error("Failed to process image. Please try again.");
+    console.error("Vision API Error:", error);
+    if (error instanceof Error) {
+      throw new Error(`Failed to analyze image: ${error.message}`);
+    }
+    throw new Error("Failed to process image. Please try again with a clearer photo.");
   }
 };
 

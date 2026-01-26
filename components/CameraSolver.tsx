@@ -118,10 +118,12 @@ const CameraSolver: React.FC = () => {
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
 
-      const context = canvas.getContext('2d', { alpha: false });
+      const context = canvas.getContext('2d', { alpha: false, willReadFrequently: false });
       if (context) {
+        context.imageSmoothingEnabled = true;
+        context.imageSmoothingQuality = 'high';
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const imgData = canvas.toDataURL('image/jpeg', 0.7);
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
         setImage(imgData);
         solveImage(imgData);
       }
@@ -130,13 +132,20 @@ const CameraSolver: React.FC = () => {
 
   const solveImage = async (imgData: string) => {
     setLoading(true);
+    setSolution(null);
     try {
-      const result = await solveWithVision(imgData);
-      setSolution(result);
+      const result = await solveWithVision(imgData, 'nerd');
 
+      if (!result || result.trim().length === 0) {
+        throw new Error("Empty response");
+      }
+
+      setSolution(result);
       await saveCameraHistory(imgData, result);
     } catch (error) {
-      setSolution("Sorry, I couldn't process that image. Please try again.");
+      console.error("Solve error:", error);
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      setSolution(`## Error Processing Image\n\nI couldn't analyze this image. Please try:\n\n- Taking a clearer, well-lit photo\n- Ensuring the problem is fully visible\n- Holding the camera steady\n\n**Error details:** ${errorMessage}`);
     } finally {
       setLoading(false);
     }

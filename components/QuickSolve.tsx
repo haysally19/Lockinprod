@@ -59,10 +59,12 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
       const canvas = document.createElement('canvas');
       canvas.width = videoRef.current.videoWidth;
       canvas.height = videoRef.current.videoHeight;
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext('2d', { alpha: false, willReadFrequently: false });
       if (ctx) {
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
         ctx.drawImage(videoRef.current, 0, 0);
-        const imageDataUrl = canvas.toDataURL('image/jpeg');
+        const imageDataUrl = canvas.toDataURL('image/jpeg', 0.95);
         setSelectedImage(imageDataUrl);
         stopCamera();
         handleSolve(imageDataUrl);
@@ -126,11 +128,17 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
 
     try {
       const result = await solveWithVision(imgToSolve, explanationMode);
+
+      if (!result || result.trim().length === 0) {
+        throw new Error("Empty response from AI");
+      }
+
       setSolution(result);
       incrementTokenUsage();
     } catch (error) {
       console.error('Analysis error:', error);
-      setSolution('Sorry, I could not analyze this problem. Please try again.');
+      const errorMsg = error instanceof Error ? error.message : "Unknown error occurred";
+      setSolution(`## Unable to Analyze\n\nI couldn't solve this problem. Please try:\n\n- Taking a clearer photo with good lighting\n- Making sure the entire problem is visible\n- Holding your device steady when capturing\n\n**Technical details:** ${errorMsg}`);
     } finally {
       setIsAnalyzing(false);
     }
