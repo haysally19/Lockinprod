@@ -25,6 +25,13 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isCameraActive, setIsCameraActive] = useState(false);
 
+  useEffect(() => {
+    startCamera();
+    return () => {
+      stopCamera();
+    };
+  }, []);
+
   const startCamera = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
@@ -178,57 +185,8 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
 
         {/* Main Content */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {!selectedImage && !isCameraActive && (
-            <div className="flex flex-col items-center justify-center min-h-[400px] space-y-6">
-              <div className="text-center space-y-3 mb-8">
-                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto shadow-2xl shadow-blue-500/30">
-                  <Camera className="w-10 h-10 text-white" />
-                </div>
-                <h2 className="text-3xl font-bold text-white">Snap & Solve</h2>
-                <p className="text-slate-400 max-w-md">Take a photo of any problem or upload an image. Get instant AI-powered solutions.</p>
-              </div>
 
-              <div className="w-full max-w-md space-y-3">
-                <button
-                  onClick={startCamera}
-                  className="w-full group relative overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-4 rounded-2xl font-bold text-lg shadow-2xl shadow-blue-500/30 transition-all active:scale-95 flex items-center justify-center gap-3"
-                >
-                  <Camera className="w-6 h-6" />
-                  Open Camera
-                </button>
-
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => fileInputRef.current?.click()}
-                    className="flex-1 bg-slate-800 hover:bg-slate-700 text-white px-6 py-4 rounded-2xl font-bold text-lg border border-slate-700 transition-all active:scale-95 flex items-center justify-center gap-3"
-                  >
-                    <Upload className="w-6 h-6" />
-                    Upload
-                  </button>
-
-                  <button
-                    onClick={handlePasteFromClipboard}
-                    className="flex-1 bg-slate-800 hover:bg-slate-700 text-white px-6 py-4 rounded-2xl font-bold text-lg border border-slate-700 transition-all active:scale-95 flex items-center justify-center gap-3"
-                  >
-                    <Clipboard className="w-6 h-6" />
-                    Paste
-                  </button>
-                </div>
-
-                <p className="text-slate-500 text-xs text-center">or press Cmd+V to paste from clipboard</p>
-              </div>
-
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleFileSelect}
-                className="hidden"
-              />
-            </div>
-          )}
-
-          {isCameraActive && (
+          {!selectedImage && (
             <div className="space-y-4">
               <div className="relative rounded-2xl overflow-hidden bg-black">
                 <video
@@ -247,16 +205,24 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
                   Capture
                 </button>
                 <button
-                  onClick={stopCamera}
-                  className="px-6 py-4 bg-slate-800 hover:bg-slate-700 text-white rounded-xl transition-all"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="px-6 py-4 bg-slate-800 hover:bg-slate-700 text-white rounded-xl transition-all flex items-center justify-center gap-2"
                 >
-                  <X className="w-5 h-5" />
+                  <Upload className="w-5 h-5" />
                 </button>
               </div>
             </div>
           )}
 
-          {selectedImage && !isCameraActive && (
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileSelect}
+            className="hidden"
+          />
+
+          {selectedImage && (
             <div className="space-y-4">
               <div className="relative rounded-2xl overflow-hidden border-2 border-slate-700 bg-slate-800">
                 <img src={selectedImage} alt="Problem" className="w-full h-auto" />
