@@ -1,6 +1,10 @@
-import React, { useState, useRef } from 'react';
-import { Camera, Upload, Sparkles, Zap, BookOpen, ArrowRight, RotateCcw, X } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Camera, Upload, Sparkles, Zap, BookOpen, ArrowRight, RotateCcw, X, Clipboard } from 'lucide-react';
 import { solveWithVision, generateSimilarProblems } from '../services/geminiService';
+import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 
 interface QuickSolveProps {
   checkTokenLimit: () => boolean;
@@ -68,6 +72,40 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
       reader.readAsDataURL(file);
     }
   };
+
+  const handlePasteFromClipboard = async () => {
+    try {
+      const items = await navigator.clipboard.read();
+      for (const item of items) {
+        for (const type of item.types) {
+          if (type.startsWith('image/')) {
+            const blob = await item.getType(type);
+            const reader = new FileReader();
+            reader.onload = (event) => {
+              setSelectedImage(event.target?.result as string);
+            };
+            reader.readAsDataURL(blob);
+            return;
+          }
+        }
+      }
+      alert('No image found in clipboard');
+    } catch (err) {
+      console.error('Clipboard error:', err);
+      alert('Unable to access clipboard. Try uploading a file instead.');
+    }
+  };
+
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'v' && !selectedImage) {
+        e.preventDefault();
+        handlePasteFromClipboard();
+      }
+    };
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [selectedImage]);
 
   const handleSolve = async () => {
     if (!selectedImage) return;
@@ -150,22 +188,34 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
                 <p className="text-slate-400 max-w-md">Take a photo of any problem or upload an image. Get instant AI-powered solutions.</p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
+              <div className="w-full max-w-md space-y-3">
                 <button
                   onClick={startCamera}
-                  className="flex-1 group relative overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-4 rounded-2xl font-bold text-lg shadow-2xl shadow-blue-500/30 transition-all active:scale-95 flex items-center justify-center gap-3"
+                  className="w-full group relative overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-4 rounded-2xl font-bold text-lg shadow-2xl shadow-blue-500/30 transition-all active:scale-95 flex items-center justify-center gap-3"
                 >
                   <Camera className="w-6 h-6" />
                   Open Camera
                 </button>
 
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="flex-1 bg-slate-800 hover:bg-slate-700 text-white px-6 py-4 rounded-2xl font-bold text-lg border border-slate-700 transition-all active:scale-95 flex items-center justify-center gap-3"
-                >
-                  <Upload className="w-6 h-6" />
-                  Upload
-                </button>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="flex-1 bg-slate-800 hover:bg-slate-700 text-white px-6 py-4 rounded-2xl font-bold text-lg border border-slate-700 transition-all active:scale-95 flex items-center justify-center gap-3"
+                  >
+                    <Upload className="w-6 h-6" />
+                    Upload
+                  </button>
+
+                  <button
+                    onClick={handlePasteFromClipboard}
+                    className="flex-1 bg-slate-800 hover:bg-slate-700 text-white px-6 py-4 rounded-2xl font-bold text-lg border border-slate-700 transition-all active:scale-95 flex items-center justify-center gap-3"
+                  >
+                    <Clipboard className="w-6 h-6" />
+                    Paste
+                  </button>
+                </div>
+
+                <p className="text-slate-500 text-xs text-center">or press Cmd+V to paste from clipboard</p>
               </div>
 
               <input
@@ -283,7 +333,13 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
                       </span>
                     </div>
                     <div className="prose prose-invert prose-sm max-w-none">
-                      <div className="text-slate-300 whitespace-pre-wrap">{solution}</div>
+                      <ReactMarkdown
+                        remarkPlugins={[remarkMath]}
+                        rehypePlugins={[rehypeKatex]}
+                        className="text-slate-300"
+                      >
+                        {solution}
+                      </ReactMarkdown>
                     </div>
                   </div>
 

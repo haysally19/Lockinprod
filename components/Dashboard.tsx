@@ -1,7 +1,7 @@
 import React from 'react';
 import { Course } from '../types';
 import { Link } from 'react-router-dom';
-import { BookOpen, Clock, CheckCircle2, BarChart3, ArrowRight, Flame, Zap, Plus, ChevronRight, FileText } from 'lucide-react';
+import { BookOpen, Clock, CheckCircle2, BarChart3, ArrowRight, Flame, Zap, Plus, ChevronRight, FileText, Sparkles, Camera } from 'lucide-react';
 import OnboardingChecklist from './OnboardingChecklist';
 
 interface DashboardProps {
@@ -119,6 +119,31 @@ const Dashboard: React.FC<DashboardProps> = ({ courses, streak, userTier, tierLo
                 streakActive={streak > 0}
             />
         </div>
+
+        {/* Quick Solve CTA */}
+        <Link to="/quick-solve" className="block mb-6 md:mb-8 group animate-in slide-in-from-bottom-4 duration-700 delay-100">
+          <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 p-6 md:p-8 rounded-2xl shadow-xl shadow-blue-500/20 hover:shadow-2xl hover:shadow-blue-500/30 transition-all hover:-translate-y-1">
+            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMSkiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-30"></div>
+
+            <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all">
+                  <Sparkles className="w-8 h-8 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-white mb-1">Quick Solve</h3>
+                  <p className="text-white/80 text-sm">Snap a photo and get instant AI-powered solutions</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 px-6 py-3 bg-white/20 backdrop-blur-sm rounded-xl border border-white/30 group-hover:bg-white/30 transition-all">
+                <Camera className="w-5 h-5 text-white" />
+                <span className="text-white font-bold text-sm">Try It Now</span>
+                <ArrowRight className="w-5 h-5 text-white group-hover:translate-x-1 transition-transform" />
+              </div>
+            </div>
+          </div>
+        </Link>
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
           {/* Study Materials Chart */}
