@@ -1,7 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Camera, RefreshCw, X, Zap, ChevronLeft, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { Camera, RefreshCw, X, Zap, ChevronLeft, Image as ImageIcon, Loader2, History, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { solveWithVision } from '../services/geminiService';
+import { saveCameraHistory, getCameraHistory, deleteCameraHistoryItem, CameraHistoryItem } from '../services/cameraHistoryService';
 import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
@@ -11,13 +12,16 @@ const CameraSolver: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const navigate = useNavigate();
-  
+
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [image, setImage] = useState<string | null>(null);
   const [solution, setSolution] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment');
+  const [showHistory, setShowHistory] = useState(false);
+  const [history, setHistory] = useState<CameraHistoryItem[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
 
   // Start Camera
   const startCamera = async () => {
@@ -25,12 +29,21 @@ const CameraSolver: React.FC = () => {
       if (stream) {
         stream.getTracks().forEach(track => track.stop());
       }
-      const newStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: facingMode }
-      });
+
+      const constraints: MediaStreamConstraints = {
+        video: {
+          facingMode: facingMode,
+          width: { ideal: 1920 },
+          height: { ideal: 1080 }
+        }
+      };
+
+      const newStream = await navigator.mediaDevices.getUserMedia(constraints);
       setStream(newStream);
       if (videoRef.current) {
         videoRef.current.srcObject = newStream;
+        videoRef.current.setAttribute('playsinline', 'true');
+        videoRef.current.setAttribute('webkit-playsinline', 'true');
       }
       setCameraError(null);
     } catch (err) {
@@ -70,6 +83,8 @@ const CameraSolver: React.FC = () => {
     try {
       const result = await solveWithVision(imgData);
       setSolution(result);
+
+      await saveCameraHistory(imgData, result);
     } catch (error) {
       setSolution("Sorry, I couldn't process that image. Please try again.");
     } finally {
@@ -85,6 +100,42 @@ const CameraSolver: React.FC = () => {
 
   const toggleCamera = () => {
     setFacingMode(prev => prev === 'user' ? 'environment' : 'user');
+  };
+
+  const loadHistory = async () => {
+    setHistoryLoading(true);
+    try {
+      const items = await getCameraHistory(20);
+      setHistory(items);
+    } catch (error) {
+      console.error('Error loading history:', error);
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
+
+  const openHistory = () => {
+    setShowHistory(true);
+    loadHistory();
+  };
+
+  const closeHistory = () => {
+    setShowHistory(false);
+  };
+
+  const viewHistoryItem = (item: CameraHistoryItem) => {
+    setImage(item.image_data);
+    setSolution(item.solution);
+    setShowHistory(false);
+  };
+
+  const deleteHistoryItem = async (id: string) => {
+    try {
+      await deleteCameraHistoryItem(id);
+      setHistory(prev => prev.filter(item => item.id !== id));
+    } catch (error) {
+      console.error('Error deleting history item:', error);
+    }
   };
 
   return (
@@ -223,9 +274,97 @@ const CameraSolver: React.FC = () => {
             <div className="w-16 h-16 bg-white rounded-full"></div>
         </button>
 
-         {/* History Placeholder (Inactive) */}
-         <div className="w-14"></div>
+         {/* History Button */}
+         <button
+            onClick={openHistory}
+            className="p-4 rounded-full bg-white/10 hover:bg-white/20 transition-colors backdrop-blur-md group"
+         >
+            <History className="w-6 h-6 text-white/80 group-hover:text-white" />
+         </button>
       </div>
+
+      {/* History Panel */}
+      {showHistory && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end md:items-center md:justify-center">
+          <div className="bg-white rounded-t-3xl md:rounded-3xl w-full md:max-w-2xl h-[85vh] md:h-[600px] flex flex-col shadow-2xl">
+            <div className="p-6 border-b border-slate-200 flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                  <History className="w-5 h-5 text-blue-600" />
+                  Solution History
+                </h2>
+                <p className="text-xs text-slate-500 mt-1">Your recent camera solves</p>
+              </div>
+              <button
+                onClick={closeHistory}
+                className="p-2 bg-slate-100 rounded-full hover:bg-slate-200 transition-colors"
+              >
+                <X className="w-5 h-5 text-slate-600" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-4">
+              {historyLoading ? (
+                <div className="flex items-center justify-center h-full">
+                  <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+                </div>
+              ) : history.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full text-slate-400">
+                  <History className="w-16 h-16 mb-4 opacity-20" />
+                  <p className="font-medium">No history yet</p>
+                  <p className="text-sm">Solve problems to build your history</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-3">
+                  {history.map((item) => (
+                    <div
+                      key={item.id}
+                      className="bg-slate-50 border border-slate-200 rounded-xl p-3 hover:shadow-md transition-all group"
+                    >
+                      <div className="flex gap-3">
+                        <img
+                          src={item.image_data}
+                          alt="Problem"
+                          className="w-20 h-20 object-cover rounded-lg flex-shrink-0 cursor-pointer"
+                          onClick={() => viewHistoryItem(item)}
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs text-slate-500 mb-1">
+                            {new Date(item.created_at).toLocaleDateString(undefined, {
+                              month: 'short',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </p>
+                          <p className="text-sm text-slate-700 line-clamp-2">
+                            {item.solution.substring(0, 100)}...
+                          </p>
+                          <div className="flex gap-2 mt-2">
+                            <button
+                              onClick={() => viewHistoryItem(item)}
+                              className="text-xs font-bold text-blue-600 hover:text-blue-800 px-3 py-1 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+                            >
+                              View
+                            </button>
+                            <button
+                              onClick={() => deleteHistoryItem(item.id)}
+                              className="text-xs font-bold text-red-600 hover:text-red-800 px-3 py-1 bg-red-50 rounded-lg hover:bg-red-100 transition-colors flex items-center gap-1"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
