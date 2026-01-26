@@ -146,7 +146,7 @@ const MainLayout: React.FC<MainLayoutProps> = (props) => {
     }, [navigate, location.pathname]);
 
     return (
-        <div className="flex h-screen bg-slate-50 text-slate-900 font-sans overflow-hidden relative">
+        <div className="flex h-screen bg-slate-50 text-slate-900 font-sans overflow-hidden relative" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
           <Sidebar
             courses={props.courses}
             onAddCourse={props.onAddCourse}
@@ -160,7 +160,7 @@ const MainLayout: React.FC<MainLayoutProps> = (props) => {
             onClose={() => setIsSidebarOpen(false)}
           />
           <main className="flex-1 flex flex-col overflow-hidden h-full shadow-inner relative">
-            <header className="md:hidden h-14 bg-white border-b border-slate-200 flex items-center justify-between px-4 flex-shrink-0 z-30" style={{ paddingLeft: 'max(1rem, env(safe-area-inset-left))', paddingRight: 'max(1rem, env(safe-area-inset-right))' }}>
+            <header className="md:hidden h-14 bg-white border-b border-slate-200 flex items-center justify-between px-4 flex-shrink-0 z-30" style={{ paddingLeft: 'max(1rem, env(safe-area-inset-left))', paddingRight: 'max(1rem, env(safe-area-inset-right))', paddingTop: 'env(safe-area-inset-top)' }}>
                 <button
                   onClick={() => setIsSidebarOpen(true)}
                   className="p-2 text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"
