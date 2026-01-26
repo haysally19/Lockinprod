@@ -55,7 +55,7 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
   };
 
   const capturePhoto = () => {
-    if (videoRef.current) {
+    if (videoRef.current && videoRef.current.videoWidth > 0) {
       const canvas = document.createElement('canvas');
       canvas.width = videoRef.current.videoWidth;
       canvas.height = videoRef.current.videoHeight;
@@ -65,6 +65,7 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
         const imageDataUrl = canvas.toDataURL('image/jpeg');
         setSelectedImage(imageDataUrl);
         stopCamera();
+        handleSolve(imageDataUrl);
       }
     }
   };
@@ -114,8 +115,9 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [selectedImage]);
 
-  const handleSolve = async () => {
-    if (!selectedImage) return;
+  const handleSolve = async (imageData?: string) => {
+    const imgToSolve = imageData || selectedImage;
+    if (!imgToSolve) return;
     if (!checkTokenLimit()) return;
 
     setIsAnalyzing(true);
@@ -123,7 +125,7 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
     setShowSimilarQuestions(false);
 
     try {
-      const result = await solveWithVision(selectedImage, explanationMode);
+      const result = await solveWithVision(imgToSolve, explanationMode);
       setSolution(result);
       incrementTokenUsage();
     } catch (error) {
