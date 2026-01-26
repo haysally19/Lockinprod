@@ -1,6 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Camera, Upload, Sparkles, Zap, BookOpen, ArrowRight, RotateCcw, X, Clipboard } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { Camera, Upload, Sparkles, Zap, BookOpen, ArrowRight, RotateCcw, X, Clipboard, History, Trash2, Loader2, MessageSquare, Send } from 'lucide-react';
 import { solveWithVision, generateSimilarProblems } from '../services/geminiService';
+import { saveQuickSolveHistory, getQuickSolveHistory, deleteQuickSolveHistoryItem, QuickSolveHistoryItem } from '../services/quicksolveHistoryService';
+import { submitCameraFeedback } from '../services/feedbackService';
 import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
@@ -24,6 +26,13 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isCameraActive, setIsCameraActive] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [history, setHistory] = useState<QuickSolveHistoryItem[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [feedbackType, setFeedbackType] = useState<'wrong_answer' | 'unclear' | 'bug' | 'suggestion' | 'other'>('other');
+  const [feedbackText, setFeedbackText] = useState('');
+  const [feedbackSubmitting, setFeedbackSubmitting] = useState(false);
 
   useEffect(() => {
     startCamera();
@@ -135,6 +144,15 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
 
       setSolution(result);
       incrementTokenUsage();
+
+      // Save to history
+      if (imgToSolve && result) {
+        try {
+          await saveQuickSolveHistory(imgToSolve, result, explanationMode);
+        } catch (err) {
+          console.error('Failed to save to history:', err);
+        }
+      }
     } catch (error) {
       console.error('Analysis error:', error);
       const errorMsg = error instanceof Error ? error.message : "Unknown error occurred";
@@ -166,6 +184,66 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
     setShowSimilarQuestions(false);
     setSimilarQuestions([]);
     stopCamera();
+    startCamera();
+  };
+
+  const loadHistory = useCallback(async () => {
+    setHistoryLoading(true);
+    try {
+      const items = await getQuickSolveHistory(20);
+      setHistory(items);
+    } catch (error) {
+      console.error('Error loading history:', error);
+    } finally {
+      setHistoryLoading(false);
+    }
+  }, []);
+
+  const openHistory = useCallback(() => {
+    setShowHistory(true);
+    loadHistory();
+  }, [loadHistory]);
+
+  const closeHistory = useCallback(() => {
+    setShowHistory(false);
+  }, []);
+
+  const viewHistoryItem = useCallback((item: QuickSolveHistoryItem) => {
+    setSelectedImage(item.image_data);
+    setSolution(item.solution);
+    setExplanationMode(item.explanation_mode);
+    setShowHistory(false);
+    stopCamera();
+  }, []);
+
+  const deleteHistoryItem = useCallback(async (id: string) => {
+    try {
+      await deleteQuickSolveHistoryItem(id);
+      setHistory(prev => prev.filter(item => item.id !== id));
+    } catch (error) {
+      console.error('Error deleting history item:', error);
+    }
+  }, []);
+
+  const handleSubmitFeedback = async () => {
+    if (!feedbackText.trim()) {
+      alert('Please enter your feedback');
+      return;
+    }
+
+    setFeedbackSubmitting(true);
+    try {
+      await submitCameraFeedback(selectedImage, solution, feedbackType, feedbackText);
+      alert('Thank you for your feedback! We will review it and improve the system.');
+      setShowFeedback(false);
+      setFeedbackText('');
+      setFeedbackType('other');
+    } catch (error) {
+      console.error('Error submitting feedback:', error);
+      alert(error instanceof Error ? error.message : 'Failed to submit feedback');
+    } finally {
+      setFeedbackSubmitting(false);
+    }
   };
 
   return (
@@ -185,12 +263,20 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
               <p className="text-slate-400 text-xs">Get answers instantly</p>
             </div>
           </div>
-          <button
-            onClick={onNavigateToDashboard}
-            className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
-          >
-            <BookOpen className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={openHistory}
+              className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+            >
+              <History className="w-5 h-5" />
+            </button>
+            <button
+              onClick={onNavigateToDashboard}
+              className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+            >
+              <BookOpen className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Main Content */}
@@ -308,11 +394,24 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
                         {explanationMode === 'bro' ? 'Bro Mode' : 'Nerd Mode'}
                       </span>
                     </div>
-                    <div className="prose prose-invert prose-sm max-w-none">
+                    <div className="prose prose-invert prose-sm max-w-none overflow-x-hidden break-words">
                       <ReactMarkdown
                         remarkPlugins={[remarkMath]}
                         rehypePlugins={[rehypeKatex]}
                         className="text-slate-300"
+                        components={{
+                          p: ({node, ...props}) => <p className="mb-4 text-slate-300 leading-relaxed break-words" {...props} />,
+                          h1: ({node, ...props}) => <h1 className="text-lg font-bold text-white mb-2 mt-4 break-words" {...props} />,
+                          h2: ({node, ...props}) => <h2 className="text-base font-bold text-white mb-2 mt-4 break-words" {...props} />,
+                          h3: ({node, ...props}) => <h3 className="text-sm font-bold text-white mb-2 mt-3 break-words" {...props} />,
+                          li: ({node, ...props}) => <li className="mb-1 text-slate-300 break-words" {...props} />,
+                          strong: ({node, ...props}) => <span className="font-bold text-white break-words" {...props} />,
+                          code: ({node, inline, ...props}) => inline
+                            ? <code className="bg-slate-900 px-1.5 py-0.5 rounded text-xs break-all" {...props} />
+                            : <code className="block bg-slate-900 p-3 rounded-lg text-xs overflow-x-auto" {...props} />,
+                          pre: ({node, ...props}) => <pre className="bg-slate-900 p-3 rounded-lg overflow-x-auto mb-4 max-w-full" {...props} />,
+                          table: ({node, ...props}) => <div className="overflow-x-auto mb-4"><table className="min-w-full" {...props} /></div>,
+                        }}
                       >
                         {solution}
                       </ReactMarkdown>
@@ -345,19 +444,193 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
                     </div>
                   )}
 
-                  <button
-                    onClick={reset}
-                    className="w-full bg-slate-800 hover:bg-slate-700 text-white px-6 py-3 rounded-xl font-bold border border-slate-700 transition-all flex items-center justify-center gap-2"
-                  >
-                    <Camera className="w-5 h-5" />
-                    Solve Another Problem
-                  </button>
+                  <div className="space-y-3">
+                    <button
+                      onClick={() => setShowFeedback(true)}
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2"
+                    >
+                      <MessageSquare className="w-4 h-4" />
+                      Report Issue or Suggest Improvement
+                    </button>
+                    <button
+                      onClick={reset}
+                      className="w-full bg-slate-800 hover:bg-slate-700 text-white px-6 py-3 rounded-xl font-bold border border-slate-700 transition-all flex items-center justify-center gap-2"
+                    >
+                      <Camera className="w-5 h-5" />
+                      Solve Another Problem
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
           )}
         </div>
       </div>
+
+      {/* History Panel */}
+      {showHistory && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-end md:items-center md:justify-center">
+          <div className="bg-slate-800 rounded-t-3xl md:rounded-3xl w-full md:max-w-2xl h-[85vh] md:h-[600px] flex flex-col shadow-2xl border border-slate-700">
+            <div className="p-6 border-b border-slate-700 flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                  <History className="w-5 h-5 text-blue-400" />
+                  Solution History
+                </h2>
+                <p className="text-xs text-slate-400 mt-1">Your recent quick solves</p>
+              </div>
+              <button
+                onClick={closeHistory}
+                className="p-2 bg-slate-700 rounded-full hover:bg-slate-600 transition-colors"
+              >
+                <X className="w-5 h-5 text-slate-300" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-4">
+              {historyLoading ? (
+                <div className="flex items-center justify-center h-full">
+                  <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
+                </div>
+              ) : history.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full text-slate-400">
+                  <History className="w-16 h-16 mb-4 opacity-20" />
+                  <p className="font-medium">No history yet</p>
+                  <p className="text-sm">Solve problems to build your history</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-3">
+                  {history.map((item) => (
+                    <div
+                      key={item.id}
+                      className="bg-slate-900/50 border border-slate-700 rounded-xl p-4 hover:bg-slate-900 transition-all"
+                    >
+                      <div className="flex gap-3">
+                        <img
+                          src={item.image_data}
+                          alt="Problem"
+                          className="w-20 h-20 object-cover rounded-lg border border-slate-700"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-2 mb-2">
+                            <div className="flex-1">
+                              <p className="text-xs text-slate-400">
+                                {new Date(item.created_at).toLocaleDateString()} at{' '}
+                                {new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              </p>
+                              <span className={`text-xs font-bold px-2 py-1 rounded-full inline-block mt-1 ${
+                                item.explanation_mode === 'bro'
+                                  ? 'bg-indigo-900/50 text-indigo-300'
+                                  : 'bg-blue-900/50 text-blue-300'
+                              }`}>
+                                {item.explanation_mode === 'bro' ? 'Bro Mode' : 'Nerd Mode'}
+                              </span>
+                            </div>
+                            <button
+                              onClick={() => deleteHistoryItem(item.id)}
+                              className="p-1.5 bg-red-900/20 hover:bg-red-900/40 text-red-400 rounded-lg transition-colors"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                          <button
+                            onClick={() => viewHistoryItem(item)}
+                            className="w-full mt-2 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-lg transition-all"
+                          >
+                            View Solution
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Feedback Modal */}
+      {showFeedback && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-end md:items-center md:justify-center">
+          <div className="bg-slate-800 rounded-t-3xl md:rounded-3xl w-full md:max-w-lg max-h-[90vh] flex flex-col shadow-2xl border border-slate-700">
+            <div className="p-6 border-b border-slate-700 flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                  <MessageSquare className="w-5 h-5 text-blue-400" />
+                  Report Issue or Suggest Improvement
+                </h2>
+                <p className="text-xs text-slate-400 mt-1">Help us improve the AI solver</p>
+              </div>
+              <button
+                onClick={() => {
+                  setShowFeedback(false);
+                  setFeedbackText('');
+                  setFeedbackType('other');
+                }}
+                className="p-2 bg-slate-700 rounded-full hover:bg-slate-600 transition-colors"
+              >
+                <X className="w-5 h-5 text-slate-300" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-white mb-2">Issue Type</label>
+                <select
+                  value={feedbackType}
+                  onChange={(e) => setFeedbackType(e.target.value as any)}
+                  className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                >
+                  <option value="wrong_answer">Wrong Answer</option>
+                  <option value="unclear">Unclear Explanation</option>
+                  <option value="bug">Technical Bug</option>
+                  <option value="suggestion">Feature Suggestion</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-white mb-2">
+                  Describe the issue or suggestion
+                </label>
+                <textarea
+                  value={feedbackText}
+                  onChange={(e) => setFeedbackText(e.target.value)}
+                  placeholder="Please provide details about what went wrong or what could be improved..."
+                  className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-none h-32"
+                />
+              </div>
+
+              <div className="bg-blue-900/20 border border-blue-800 p-4 rounded-xl">
+                <p className="text-xs text-slate-300">
+                  Your feedback helps us improve the AI solver for everyone. We review all submissions and use them to enhance accuracy and usability.
+                </p>
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-slate-700">
+              <button
+                onClick={handleSubmitFeedback}
+                disabled={feedbackSubmitting || !feedbackText.trim()}
+                className="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl shadow-lg hover:bg-blue-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {feedbackSubmitting ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-5 h-5" />
+                    Submit Feedback
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
