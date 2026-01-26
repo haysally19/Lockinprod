@@ -1,8 +1,9 @@
 import React, { useRef, useState, useEffect, memo, useCallback } from 'react';
-import { Camera, RefreshCw, X, Zap, ChevronLeft, Image as ImageIcon, Loader2, History, Trash2 } from 'lucide-react';
+import { Camera, RefreshCw, X, Zap, ChevronLeft, Image as ImageIcon, Loader2, History, Trash2, MessageSquare, Send } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { solveWithVision } from '../services/geminiService';
 import { saveCameraHistory, getCameraHistory, deleteCameraHistoryItem, CameraHistoryItem } from '../services/cameraHistoryService';
+import { submitCameraFeedback } from '../services/feedbackService';
 import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
@@ -67,6 +68,10 @@ const CameraSolver: React.FC = () => {
   const [showHistory, setShowHistory] = useState(false);
   const [history, setHistory] = useState<CameraHistoryItem[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [feedbackType, setFeedbackType] = useState<'wrong_answer' | 'unclear' | 'bug' | 'suggestion' | 'other'>('other');
+  const [feedbackText, setFeedbackText] = useState('');
+  const [feedbackSubmitting, setFeedbackSubmitting] = useState(false);
 
   // Start Camera
   const startCamera = async () => {
@@ -197,6 +202,27 @@ const CameraSolver: React.FC = () => {
     }
   }, []);
 
+  const handleSubmitFeedback = async () => {
+    if (!feedbackText.trim()) {
+      alert('Please enter your feedback');
+      return;
+    }
+
+    setFeedbackSubmitting(true);
+    try {
+      await submitCameraFeedback(image, solution, feedbackType, feedbackText);
+      alert('Thank you for your feedback! We will review it and improve the system.');
+      setShowFeedback(false);
+      setFeedbackText('');
+      setFeedbackType('other');
+    } catch (error) {
+      console.error('Error submitting feedback:', error);
+      alert(error instanceof Error ? error.message : 'Failed to submit feedback');
+    } finally {
+      setFeedbackSubmitting(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black z-50 flex flex-col text-white">
       {/* Header */}
@@ -268,7 +294,7 @@ const CameraSolver: React.FC = () => {
            </div>
 
            {/* Solution Content */}
-           <div className="flex-1 overflow-y-auto p-6 pt-2">
+           <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6 pt-2">
               <div className="flex justify-between items-start mb-6 border-b border-slate-100 pb-4 sticky top-0 bg-white z-10 pt-2">
                   <div>
                       <h3 className="text-xl font-bold flex items-center gap-2 text-slate-900">
@@ -293,16 +319,22 @@ const CameraSolver: React.FC = () => {
                     <p className="text-slate-500 font-medium animate-pulse text-sm uppercase tracking-wide">Analyzing Image...</p>
                 </div>
               ) : (
-                <div className="prose prose-slate prose-sm w-full max-w-none pb-20">
-                     <ReactMarkdown 
-                        remarkPlugins={[remarkMath]} 
+                <div className="prose prose-slate prose-sm w-full max-w-none pb-32 overflow-x-hidden break-words">
+                     <ReactMarkdown
+                        remarkPlugins={[remarkMath]}
                         rehypePlugins={[rehypeKatex]}
                         components={{
-                            p: ({node, ...props}) => <p className="mb-4 text-slate-700 leading-relaxed" {...props} />,
-                            h1: ({node, ...props}) => <h1 className="text-lg font-bold text-slate-900 mb-2 mt-4" {...props} />,
-                            h2: ({node, ...props}) => <h2 className="text-base font-bold text-slate-900 mb-2 mt-4" {...props} />,
-                            li: ({node, ...props}) => <li className="mb-1 text-slate-700" {...props} />,
-                            strong: ({node, ...props}) => <span className="font-bold text-slate-900 bg-yellow-50 px-1 rounded" {...props} />
+                            p: ({node, ...props}) => <p className="mb-4 text-slate-700 leading-relaxed break-words" {...props} />,
+                            h1: ({node, ...props}) => <h1 className="text-lg font-bold text-slate-900 mb-2 mt-4 break-words" {...props} />,
+                            h2: ({node, ...props}) => <h2 className="text-base font-bold text-slate-900 mb-2 mt-4 break-words" {...props} />,
+                            h3: ({node, ...props}) => <h3 className="text-sm font-bold text-slate-900 mb-2 mt-3 break-words" {...props} />,
+                            li: ({node, ...props}) => <li className="mb-1 text-slate-700 break-words" {...props} />,
+                            strong: ({node, ...props}) => <span className="font-bold text-slate-900 bg-yellow-50 px-1 rounded break-words" {...props} />,
+                            code: ({node, inline, ...props}) => inline
+                              ? <code className="bg-slate-100 px-1.5 py-0.5 rounded text-xs break-all" {...props} />
+                              : <code className="block bg-slate-100 p-3 rounded-lg text-xs overflow-x-auto" {...props} />,
+                            pre: ({node, ...props}) => <pre className="bg-slate-100 p-3 rounded-lg overflow-x-auto mb-4 max-w-full" {...props} />,
+                            table: ({node, ...props}) => <div className="overflow-x-auto mb-4"><table className="min-w-full" {...props} /></div>,
                         }}
                      >
                         {solution || ''}
@@ -312,12 +344,24 @@ const CameraSolver: React.FC = () => {
            </div>
            
            {/* Bottom Actions */}
-           {!loading && (
-             <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-white via-white to-transparent pt-10">
-                <button onClick={reset} className="w-full py-4 bg-slate-900 text-white font-bold rounded-2xl shadow-xl shadow-slate-900/20 hover:bg-slate-800 transition-all flex items-center justify-center gap-2 transform active:scale-95">
-                    <Camera className="w-5 h-5" />
-                    Scan Another Problem
-                </button>
+           {!loading && solution && (
+             <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 bg-gradient-to-t from-white via-white to-transparent pt-12">
+                <div className="space-y-3">
+                  <button
+                    onClick={() => {
+                      const feedbackBtn = document.getElementById('feedback-trigger');
+                      if (feedbackBtn) feedbackBtn.click();
+                    }}
+                    className="w-full py-3 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 transition-all flex items-center justify-center gap-2 text-sm"
+                  >
+                    <MessageSquare className="w-4 h-4" />
+                    Report Issue or Suggest Improvement
+                  </button>
+                  <button onClick={reset} className="w-full py-4 bg-slate-900 text-white font-bold rounded-2xl shadow-xl shadow-slate-900/20 hover:bg-slate-800 transition-all flex items-center justify-center gap-2 transform active:scale-95">
+                      <Camera className="w-5 h-5" />
+                      Scan Another Problem
+                  </button>
+                </div>
              </div>
            )}
       </div>
@@ -390,6 +434,89 @@ const CameraSolver: React.FC = () => {
                   ))}
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Feedback Modal */}
+      <button id="feedback-trigger" className="hidden" onClick={() => setShowFeedback(true)} />
+      {showFeedback && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end md:items-center md:justify-center">
+          <div className="bg-white rounded-t-3xl md:rounded-3xl w-full md:max-w-lg max-h-[90vh] flex flex-col shadow-2xl">
+            <div className="p-6 border-b border-slate-200 flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                  <MessageSquare className="w-5 h-5 text-blue-600" />
+                  Report Issue or Suggest Improvement
+                </h2>
+                <p className="text-xs text-slate-500 mt-1">Help us improve the AI solver</p>
+              </div>
+              <button
+                onClick={() => {
+                  setShowFeedback(false);
+                  setFeedbackText('');
+                  setFeedbackType('other');
+                }}
+                className="p-2 bg-slate-100 rounded-full hover:bg-slate-200 transition-colors"
+              >
+                <X className="w-5 h-5 text-slate-600" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-slate-900 mb-2">Issue Type</label>
+                <select
+                  value={feedbackType}
+                  onChange={(e) => setFeedbackType(e.target.value as any)}
+                  className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                >
+                  <option value="wrong_answer">Wrong Answer</option>
+                  <option value="unclear">Unclear Explanation</option>
+                  <option value="bug">Technical Bug</option>
+                  <option value="suggestion">Feature Suggestion</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-slate-900 mb-2">
+                  Describe the issue or suggestion
+                </label>
+                <textarea
+                  value={feedbackText}
+                  onChange={(e) => setFeedbackText(e.target.value)}
+                  placeholder="Please provide details about what went wrong or what could be improved..."
+                  className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-none h-32"
+                />
+              </div>
+
+              <div className="bg-blue-50 p-4 rounded-xl">
+                <p className="text-xs text-slate-600">
+                  Your feedback helps us improve the AI solver for everyone. We review all submissions and use them to enhance accuracy and usability.
+                </p>
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-slate-200">
+              <button
+                onClick={handleSubmitFeedback}
+                disabled={feedbackSubmitting || !feedbackText.trim()}
+                className="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl shadow-lg hover:bg-blue-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {feedbackSubmitting ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-5 h-5" />
+                    Submit Feedback
+                  </>
+                )}
+              </button>
             </div>
           </div>
         </div>
