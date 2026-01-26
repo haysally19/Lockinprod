@@ -1,23 +1,30 @@
-import React, { useState, useEffect, ReactNode, Component } from 'react';
+import React, { useState, useEffect, ReactNode, Component, lazy, Suspense } from 'react';
 import { HashRouter as Router, Routes, Route, Navigate, useParams } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import LoginScreen from './components/LoginScreen';
-import LandingPage from './components/LandingPage';
-import PrivacyPolicy from './components/PrivacyPolicy';
-import TermsOfService from './components/TermsOfService';
 import AddCourseModal from './components/AddCourseModal';
 import { Course, ClassSubject, Note, CourseDocument } from './types';
 import Dashboard from './components/Dashboard';
-import ClassesOverview from './components/ClassesOverview';
-import ClassView from './components/ClassView';
-import SettingsView from './components/SettingsView';
 import PaywallModal from './components/PaywallModal';
-import QuickSolve from './components/QuickSolve';
 import { Menu } from 'lucide-react';
 import Logo from './components/Logo';
 import { supabase } from './lib/supabase';
 import { db } from './services/db';
 import { startCheckout } from './lib/stripe';
+
+const LandingPage = lazy(() => import('./components/LandingPage'));
+const PrivacyPolicy = lazy(() => import('./components/PrivacyPolicy'));
+const TermsOfService = lazy(() => import('./components/TermsOfService'));
+const ClassesOverview = lazy(() => import('./components/ClassesOverview'));
+const ClassView = lazy(() => import('./components/ClassView'));
+const SettingsView = lazy(() => import('./components/SettingsView'));
+const QuickSolve = lazy(() => import('./components/QuickSolve'));
+
+const LoadingSpinner = () => (
+  <div className="h-full w-full flex items-center justify-center">
+    <div className="w-8 h-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin"></div>
+  </div>
+);
 
 interface ErrorBoundaryProps {
   children?: ReactNode;
@@ -156,53 +163,55 @@ const MainLayout: React.FC<MainLayoutProps> = (props) => {
             </header>
 
             <div className="flex-1 overflow-hidden relative">
-                <Routes>
-                <Route path="/" element={<Dashboard courses={props.courses} streak={props.streak} userTier={props.userTier} tierLoaded={props.tierLoaded} onUpgrade={props.onUpgrade} onAddCourse={props.onAddCourse} />} />
-                <Route path="/quick-solve" element={<QuickSolve checkTokenLimit={props.checkTokenLimit} incrementTokenUsage={props.incrementTokenUsage} onNavigateToDashboard={() => window.location.hash = '#/'} />} />
-                <Route
-                    path="/classes"
-                    element={
-                        <ClassesOverview
-                            courses={props.courses}
-                            onAddCourse={() => {
-                                if (props.checkCourseLimit()) props.setIsAddModalOpen(true);
-                            }}
-                            onDeleteCourse={props.handleDeleteCourse}
-                        />
-                    }
-                />
-                <Route
-                    path="/class/:id"
-                    element={
-                        <ClassViewWrapper
-                            courses={props.courses}
-                            checkTokenLimit={props.checkTokenLimit}
-                            incrementTokenUsage={props.incrementTokenUsage}
-                            onAddNote={props.onAddNote}
-                            onUpdateNote={props.onUpdateNote}
-                            onDeleteNote={props.onDeleteNote}
-                            onAddDoc={props.onAddDoc}
-                            onDeleteDoc={props.onDeleteDoc}
-                        />
-                    }
-                />
-                <Route
-                    path="/settings"
-                    element={
-                        <SettingsView
-                            userTier={props.userTier}
-                            userProfile={props.userProfile}
-                            onUpgrade={props.onUpgrade}
-                            onDowngrade={props.onDowngrade}
-                            onLogout={props.onLogout}
-                            dailyTokens={props.dailyTokens}
-                            bonusCredits={props.bonusCredits}
-                            subscriptionEndDate={props.subscriptionEndDate}
-                        />
-                    }
-                />
-                <Route path="*" element={<Navigate to="/" />} />
-                </Routes>
+                <Suspense fallback={<LoadingSpinner />}>
+                  <Routes>
+                  <Route path="/" element={<Dashboard courses={props.courses} streak={props.streak} userTier={props.userTier} tierLoaded={props.tierLoaded} onUpgrade={props.onUpgrade} onAddCourse={props.onAddCourse} />} />
+                  <Route path="/quick-solve" element={<QuickSolve checkTokenLimit={props.checkTokenLimit} incrementTokenUsage={props.incrementTokenUsage} onNavigateToDashboard={() => window.location.hash = '#/'} />} />
+                  <Route
+                      path="/classes"
+                      element={
+                          <ClassesOverview
+                              courses={props.courses}
+                              onAddCourse={() => {
+                                  if (props.checkCourseLimit()) props.setIsAddModalOpen(true);
+                              }}
+                              onDeleteCourse={props.handleDeleteCourse}
+                          />
+                      }
+                  />
+                  <Route
+                      path="/class/:id"
+                      element={
+                          <ClassViewWrapper
+                              courses={props.courses}
+                              checkTokenLimit={props.checkTokenLimit}
+                              incrementTokenUsage={props.incrementTokenUsage}
+                              onAddNote={props.onAddNote}
+                              onUpdateNote={props.onUpdateNote}
+                              onDeleteNote={props.onDeleteNote}
+                              onAddDoc={props.onAddDoc}
+                              onDeleteDoc={props.onDeleteDoc}
+                          />
+                      }
+                  />
+                  <Route
+                      path="/settings"
+                      element={
+                          <SettingsView
+                              userTier={props.userTier}
+                              userProfile={props.userProfile}
+                              onUpgrade={props.onUpgrade}
+                              onDowngrade={props.onDowngrade}
+                              onLogout={props.onLogout}
+                              dailyTokens={props.dailyTokens}
+                              bonusCredits={props.bonusCredits}
+                              subscriptionEndDate={props.subscriptionEndDate}
+                          />
+                      }
+                  />
+                  <Route path="*" element={<Navigate to="/" />} />
+                  </Routes>
+                </Suspense>
             </div>
           </main>
           
@@ -646,9 +655,9 @@ const App: React.FC = () => {
             <>
               <Route path="/login" element={<LoginScreen onLogin={handleLogin} initialMode="login" />} />
               <Route path="/signup" element={<LoginScreen onLogin={handleLogin} initialMode="signup" />} />
-              <Route path="/privacy" element={<PrivacyPolicy />} />
-              <Route path="/terms" element={<TermsOfService />} />
-              <Route path="/" element={<LandingPage />} />
+              <Route path="/privacy" element={<Suspense fallback={<LoadingSpinner />}><PrivacyPolicy /></Suspense>} />
+              <Route path="/terms" element={<Suspense fallback={<LoadingSpinner />}><TermsOfService /></Suspense>} />
+              <Route path="/" element={<Suspense fallback={<LoadingSpinner />}><LandingPage /></Suspense>} />
               <Route path="*" element={<Navigate to="/" />} />
             </>
           )}

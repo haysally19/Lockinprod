@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, memo, useCallback } from 'react';
 import { Camera, RefreshCw, X, Zap, ChevronLeft, Image as ImageIcon, Loader2, History, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { solveWithVision } from '../services/geminiService';
@@ -7,6 +7,51 @@ import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
+
+const HistoryItem = memo(({ item, onView, onDelete }: {
+  item: CameraHistoryItem;
+  onView: (item: CameraHistoryItem) => void;
+  onDelete: (id: string) => void;
+}) => (
+  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 hover:shadow-md transition-all group">
+    <div className="flex gap-3">
+      <img
+        src={item.image_data}
+        alt="Problem"
+        className="w-20 h-20 object-cover rounded-lg flex-shrink-0 cursor-pointer"
+        onClick={() => onView(item)}
+      />
+      <div className="flex-1 min-w-0">
+        <p className="text-xs text-slate-500 mb-1">
+          {new Date(item.created_at).toLocaleDateString(undefined, {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          })}
+        </p>
+        <p className="text-sm text-slate-700 line-clamp-2">
+          {item.solution.substring(0, 100)}...
+        </p>
+        <div className="flex gap-2 mt-2">
+          <button
+            onClick={() => onView(item)}
+            className="text-xs font-bold text-blue-600 hover:text-blue-800 px-3 py-1 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+          >
+            View
+          </button>
+          <button
+            onClick={() => onDelete(item.id)}
+            className="text-xs font-bold text-red-600 hover:text-red-800 px-3 py-1 bg-red-50 rounded-lg hover:bg-red-100 transition-colors flex items-center gap-1"
+          >
+            <Trash2 className="w-3 h-3" />
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+));
 
 const CameraSolver: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -39,12 +84,18 @@ const CameraSolver: React.FC = () => {
       };
 
       const newStream = await navigator.mediaDevices.getUserMedia(constraints);
-      setStream(newStream);
+
       if (videoRef.current) {
         videoRef.current.srcObject = newStream;
-        videoRef.current.setAttribute('playsinline', 'true');
-        videoRef.current.setAttribute('webkit-playsinline', 'true');
+
+        try {
+          await videoRef.current.play();
+        } catch (playError) {
+          console.error("Play error:", playError);
+        }
       }
+
+      setStream(newStream);
       setCameraError(null);
     } catch (err) {
       console.error("Camera Error:", err);
@@ -59,24 +110,23 @@ const CameraSolver: React.FC = () => {
     };
   }, [facingMode]);
 
-  const captureImage = () => {
+  const captureImage = useCallback(() => {
     if (videoRef.current && canvasRef.current) {
       const video = videoRef.current;
       const canvas = canvasRef.current;
-      
-      // Match canvas size to video size
+
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
-      
-      const context = canvas.getContext('2d');
+
+      const context = canvas.getContext('2d', { alpha: false });
       if (context) {
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const imgData = canvas.toDataURL('image/jpeg', 0.8);
+        const imgData = canvas.toDataURL('image/jpeg', 0.7);
         setImage(imgData);
         solveImage(imgData);
       }
     }
-  };
+  }, []);
 
   const solveImage = async (imgData: string) => {
     setLoading(true);
@@ -102,7 +152,7 @@ const CameraSolver: React.FC = () => {
     setFacingMode(prev => prev === 'user' ? 'environment' : 'user');
   };
 
-  const loadHistory = async () => {
+  const loadHistory = useCallback(async () => {
     setHistoryLoading(true);
     try {
       const items = await getCameraHistory(20);
@@ -112,31 +162,31 @@ const CameraSolver: React.FC = () => {
     } finally {
       setHistoryLoading(false);
     }
-  };
+  }, []);
 
-  const openHistory = () => {
+  const openHistory = useCallback(() => {
     setShowHistory(true);
     loadHistory();
-  };
+  }, [loadHistory]);
 
-  const closeHistory = () => {
+  const closeHistory = useCallback(() => {
     setShowHistory(false);
-  };
+  }, []);
 
-  const viewHistoryItem = (item: CameraHistoryItem) => {
+  const viewHistoryItem = useCallback((item: CameraHistoryItem) => {
     setImage(item.image_data);
     setSolution(item.solution);
     setShowHistory(false);
-  };
+  }, []);
 
-  const deleteHistoryItem = async (id: string) => {
+  const deleteHistoryItem = useCallback(async (id: string) => {
     try {
       await deleteCameraHistoryItem(id);
       setHistory(prev => prev.filter(item => item.id !== id));
     } catch (error) {
       console.error('Error deleting history item:', error);
     }
-  };
+  }, []);
 
   return (
     <div className="fixed inset-0 bg-black z-50 flex flex-col text-white">
@@ -156,12 +206,17 @@ const CameraSolver: React.FC = () => {
         {!image ? (
           <>
             {/* Live Camera Feed */}
-            <video 
-              ref={videoRef} 
-              autoPlay 
-              playsInline 
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
               muted
+              webkit-playsinline="true"
               className="absolute inset-0 w-full h-full object-cover"
+              onLoadedMetadata={(e) => {
+                const video = e.currentTarget;
+                video.play().catch(err => console.error("Video play error:", err));
+              }}
             />
             
             {/* Focus Reticle Overlay */}
@@ -317,47 +372,12 @@ const CameraSolver: React.FC = () => {
               ) : (
                 <div className="grid grid-cols-1 gap-3">
                   {history.map((item) => (
-                    <div
+                    <HistoryItem
                       key={item.id}
-                      className="bg-slate-50 border border-slate-200 rounded-xl p-3 hover:shadow-md transition-all group"
-                    >
-                      <div className="flex gap-3">
-                        <img
-                          src={item.image_data}
-                          alt="Problem"
-                          className="w-20 h-20 object-cover rounded-lg flex-shrink-0 cursor-pointer"
-                          onClick={() => viewHistoryItem(item)}
-                        />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs text-slate-500 mb-1">
-                            {new Date(item.created_at).toLocaleDateString(undefined, {
-                              month: 'short',
-                              day: 'numeric',
-                              hour: '2-digit',
-                              minute: '2-digit'
-                            })}
-                          </p>
-                          <p className="text-sm text-slate-700 line-clamp-2">
-                            {item.solution.substring(0, 100)}...
-                          </p>
-                          <div className="flex gap-2 mt-2">
-                            <button
-                              onClick={() => viewHistoryItem(item)}
-                              className="text-xs font-bold text-blue-600 hover:text-blue-800 px-3 py-1 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
-                            >
-                              View
-                            </button>
-                            <button
-                              onClick={() => deleteHistoryItem(item.id)}
-                              className="text-xs font-bold text-red-600 hover:text-red-800 px-3 py-1 bg-red-50 rounded-lg hover:bg-red-100 transition-colors flex items-center gap-1"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                              Delete
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                      item={item}
+                      onView={viewHistoryItem}
+                      onDelete={deleteHistoryItem}
+                    />
                   ))}
                 </div>
               )}
