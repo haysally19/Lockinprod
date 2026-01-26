@@ -7,14 +7,6 @@ export enum ClassSubject {
   GENERAL = 'General'
 }
 
-export interface Assignment {
-  id: string;
-  title: string;
-  dueDate: string;
-  completed: boolean;
-  grade?: number; // Score out of 100, if returned/graded
-}
-
 export interface Note {
   id: string;
   title: string;
@@ -50,7 +42,6 @@ export interface Course {
   subject: ClassSubject;
   color: string; // Tailwind class for background (e.g., 'bg-blue-500')
   icon: string;
-  assignments: Assignment[];
   notes: Note[];
   documents: CourseDocument[];
   flashcards?: Flashcard[]; // Optional for now, usually generated on fly
@@ -70,4 +61,4 @@ export interface EssayFeedback {
   improvements: string[];
 }
 
-export type TabView = 'overview' | 'chat' | 'notes' | 'grader' | 'docs' | 'assignments' | 'study';
+export type TabView = 'overview' | 'chat' | 'notes' | 'grader' | 'docs' | 'study';

@@ -18,8 +18,7 @@ const ClassCard: React.FC<ClassCardProps> = ({ course, onDelete }) => {
   // --- Data Calculations ---
   const totalNotes = course.notes.length;
   const totalDocs = course.documents?.length || 0;
-  const pendingTasks = course.assignments.filter(a => !a.completed).length;
-  
+
   return (
     <div className="h-full group bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-300 flex flex-col overflow-hidden relative">
       {/* Decorative Top Border */}
@@ -42,7 +41,7 @@ const ClassCard: React.FC<ClassCardProps> = ({ course, onDelete }) => {
           </div>
 
           {/* Study Materials Stats */}
-          <div className="mb-3 grid grid-cols-3 gap-2">
+          <div className="mb-3 grid grid-cols-2 gap-2">
               <div className="text-center p-2 bg-purple-50 rounded-lg border border-purple-100">
                   <div className="text-sm font-bold text-purple-700">{totalNotes}</div>
                   <div className="text-[9px] font-medium text-purple-600 uppercase tracking-wide">Notes</div>
@@ -50,10 +49,6 @@ const ClassCard: React.FC<ClassCardProps> = ({ course, onDelete }) => {
               <div className="text-center p-2 bg-blue-50 rounded-lg border border-blue-100">
                   <div className="text-sm font-bold text-blue-700">{totalDocs}</div>
                   <div className="text-[9px] font-medium text-blue-600 uppercase tracking-wide">Docs</div>
-              </div>
-              <div className="text-center p-2 bg-amber-50 rounded-lg border border-amber-100">
-                  <div className="text-sm font-bold text-amber-700">{pendingTasks}</div>
-                  <div className="text-[9px] font-medium text-amber-600 uppercase tracking-wide">Tasks</div>
               </div>
           </div>
 

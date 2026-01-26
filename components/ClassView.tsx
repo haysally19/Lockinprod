@@ -1,12 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Course, TabView, Assignment, Note, CourseDocument } from '../types';
-import { MessageSquare, FileText, CheckSquare, GraduationCap, Files, Layout, BrainCircuit } from 'lucide-react';
+import { Course, TabView, Note, CourseDocument } from '../types';
+import { MessageSquare, FileText, GraduationCap, Files, Layout, BrainCircuit } from 'lucide-react';
 import ChatInterface from './ChatInterface';
 import EssayGrader from './EssayGrader';
 import NotesModule from './NotesModule';
-import AssignmentsModule from './AssignmentsModule';
 import DocsModule from './DocsModule';
 import ClassOverview from './ClassOverview';
 import StudyCenter from './StudyCenter';
@@ -15,9 +14,6 @@ interface ClassViewProps {
   course: Course;
   checkTokenLimit: () => boolean;
   incrementTokenUsage: () => void;
-  // DB Handlers
-  onAddAssignment: (courseId: string, a: Omit<Assignment, 'id'>) => Promise<void>;
-  onUpdateAssignment: (a: Assignment) => Promise<void>;
   onAddNote: (courseId: string, n: Omit<Note, 'id'>) => Promise<string>;
   onUpdateNote: (n: Note) => Promise<void>;
   onDeleteNote: (id: string) => Promise<void>;
@@ -25,12 +21,10 @@ interface ClassViewProps {
   onDeleteDoc: (id: string) => Promise<void>;
 }
 
-const ClassView: React.FC<ClassViewProps> = ({ 
-  course, 
-  checkTokenLimit, 
+const ClassView: React.FC<ClassViewProps> = ({
+  course,
+  checkTokenLimit,
   incrementTokenUsage,
-  onAddAssignment,
-  onUpdateAssignment,
   onAddNote,
   onUpdateNote,
   onDeleteNote,
@@ -55,7 +49,6 @@ const ClassView: React.FC<ClassViewProps> = ({
     { id: 'grader', label: 'Grader', icon: GraduationCap },
     { id: 'notes', label: 'Notes', icon: FileText },
     { id: 'docs', label: 'Library', icon: Files },
-    { id: 'assignments', label: 'Tasks', icon: CheckSquare },
   ];
 
   const handleAskAI = (question: string) => {
@@ -147,21 +140,10 @@ const ClassView: React.FC<ClassViewProps> = ({
             )}
             
             {activeTab === 'grader' && (
-            <EssayGrader 
-                course={course} 
+            <EssayGrader
+                course={course}
                 checkTokenLimit={checkTokenLimit}
                 incrementTokenUsage={incrementTokenUsage}
-            />
-            )}
-            
-            {activeTab === 'assignments' && (
-            <AssignmentsModule 
-                assignments={course.assignments}
-                onAddAssignment={(a) => onAddAssignment(course.id, a)}
-                onUpdateAssignment={onUpdateAssignment}
-                checkTokenLimit={checkTokenLimit}
-                incrementTokenUsage={incrementTokenUsage}
-                subject={course.subject}
             />
             )}
 

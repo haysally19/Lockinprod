@@ -14,17 +14,8 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ courses, streak, userTier, tierLoaded = true, onUpgrade, onAddCourse }) => {
-  const allAssignments = courses.flatMap(c => 
-    c.assignments.map(a => ({ ...a, courseName: c.name, courseColor: c.color, courseId: c.id }))
-  );
-
-  const pendingAssignments = allAssignments
-    .filter(a => !a.completed)
-    .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
-
   const totalNotes = courses.reduce((sum, c) => sum + c.notes.length, 0);
   const totalDocs = courses.reduce((sum, c) => sum + (c.documents?.length || 0), 0);
-  const totalTasks = pendingAssignments.length;
 
   const studyMaterials = courses.map(course => {
     const noteCount = course.notes.length;
@@ -84,7 +75,7 @@ const Dashboard: React.FC<DashboardProps> = ({ courses, streak, userTier, tierLo
         <OnboardingChecklist />
 
         {/* Top Level Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 mb-6 md:mb-8">
             <StatCard
                 icon={FileText}
                 title="Notes"
@@ -94,10 +85,10 @@ const Dashboard: React.FC<DashboardProps> = ({ courses, streak, userTier, tierLo
                 delay="delay-[0ms]"
             />
             <StatCard
-                icon={CheckCircle2}
-                title="Tasks"
-                value={totalTasks}
-                trend="Pending"
+                icon={BookOpen}
+                title="Materials"
+                value={totalDocs}
+                trend="Resources"
                 color="rose"
                 delay="delay-[100ms]"
             />
@@ -195,41 +186,6 @@ const Dashboard: React.FC<DashboardProps> = ({ courses, streak, userTier, tierLo
               </div>
           </div>
 
-          {/* Activity Feed / Deadlines */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col animate-in slide-in-from-bottom-4 duration-700 delay-100">
-              <h3 className="text-lg font-bold text-slate-950 flex items-center gap-2 mb-6">
-                  <Clock className="w-5 h-5 text-rose-500" />
-                  Due Soon
-              </h3>
-              <div className="flex-1 overflow-y-auto no-scrollbar space-y-2">
-              {pendingAssignments.length === 0 ? (
-                  <div className="p-8 text-center text-slate-400 h-full flex flex-col items-center justify-center italic">
-                    <CheckCircle2 className="w-8 h-8 mb-3 text-slate-200" />
-                    <p className="text-xs font-medium">No pending tasks.</p>
-                  </div>
-              ) : (
-                  pendingAssignments.slice(0, 6).map((assignment) => (
-                  <Link to={`/class/${assignment.courseId}`} key={assignment.id} className="p-3 flex items-center gap-3 bg-slate-50 hover:bg-white border border-transparent hover:border-slate-200 hover:shadow-sm rounded-xl transition-all group active:scale-95">
-                      <div className={`w-8 h-8 rounded-lg ${assignment.courseColor} flex items-center justify-center text-white font-bold text-xs`}>
-                        {assignment.courseName.charAt(0)}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-bold text-slate-900 text-xs truncate leading-tight group-hover:text-indigo-600 transition-colors">{assignment.title}</h4>
-                        <p className="text-[10px] text-slate-500 font-medium truncate">{assignment.courseName}</p>
-                      </div>
-                      <div className="flex flex-col items-end">
-                        <span className="text-[10px] text-rose-600 font-bold bg-rose-50 px-2 py-0.5 rounded-full whitespace-nowrap">
-                            {new Date(assignment.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                        </span>
-                      </div>
-                  </Link>
-                  ))
-              )}
-              </div>
-              <Link to="/calendar" className="mt-4 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-indigo-600 hover:gap-3 transition-all">
-                  Full Schedule <ArrowRight className="w-3 h-3" />
-              </Link>
-          </div>
         </div>
 
         {/* Courses Section */}
@@ -260,7 +216,7 @@ const Dashboard: React.FC<DashboardProps> = ({ courses, streak, userTier, tierLo
                              <div className="h-1 flex-1 bg-slate-100 rounded-full overflow-hidden">
                                 <div className={`h-full ${course.color} w-3/4 opacity-50`}></div>
                              </div>
-                             <span className="text-[10px] font-bold text-slate-400 uppercase whitespace-nowrap">{course.assignments.filter(a => !a.completed).length} Tasks</span>
+                             <span className="text-[10px] font-bold text-slate-400 uppercase whitespace-nowrap">{course.notes.length} Notes</span>
                           </div>
                       </div>
                       

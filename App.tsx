@@ -6,11 +6,10 @@ import LandingPage from './components/LandingPage';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import TermsOfService from './components/TermsOfService';
 import AddCourseModal from './components/AddCourseModal';
-import { Course, ClassSubject, Assignment, Note, CourseDocument } from './types';
+import { Course, ClassSubject, Note, CourseDocument } from './types';
 import Dashboard from './components/Dashboard';
 import ClassesOverview from './components/ClassesOverview';
 import ClassView from './components/ClassView';
-import CalendarView from './components/CalendarView';
 import SettingsView from './components/SettingsView';
 import PaywallModal from './components/PaywallModal';
 import QuickSolve from './components/QuickSolve';
@@ -61,13 +60,10 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   }
 }
 
-const ClassViewWrapper: React.FC<{ 
-  courses: Course[], 
+const ClassViewWrapper: React.FC<{
+  courses: Course[],
   checkTokenLimit: () => boolean,
   incrementTokenUsage: () => void,
-  // DB Handlers passed down
-  onAddAssignment: (cid: string, a: any) => Promise<void>,
-  onUpdateAssignment: (a: any) => Promise<void>,
   onAddNote: (cid: string, n: any) => Promise<string>,
   onUpdateNote: (n: any) => Promise<void>,
   onDeleteNote: (id: string) => Promise<void>,
@@ -80,12 +76,10 @@ const ClassViewWrapper: React.FC<{
     return <div className="p-8 text-center text-slate-500">Class not found.</div>;
   }
   return (
-      <ClassView 
-          course={course} 
+      <ClassView
+          course={course}
           checkTokenLimit={props.checkTokenLimit}
           incrementTokenUsage={props.incrementTokenUsage}
-          onAddAssignment={props.onAddAssignment}
-          onUpdateAssignment={props.onUpdateAssignment}
           onAddNote={props.onAddNote}
           onUpdateNote={props.onUpdateNote}
           onDeleteNote={props.onDeleteNote}
@@ -123,9 +117,6 @@ interface MainLayoutProps {
     showPaywall: boolean;
     setShowPaywall: (val: boolean) => void;
     paywallReason: 'course_limit' | 'token_limit' | 'upgrade';
-    // DB Handlers
-    onAddAssignment: (cid: string, a: any) => Promise<void>,
-    onUpdateAssignment: (a: any) => Promise<void>,
     onAddNote: (cid: string, n: any) => Promise<string>,
     onUpdateNote: (n: any) => Promise<void>,
     onDeleteNote: (id: string) => Promise<void>,
@@ -180,23 +171,20 @@ const MainLayout: React.FC<MainLayoutProps> = (props) => {
                         />
                     }
                 />
-                <Route path="/calendar" element={<CalendarView courses={props.courses} />} />
-                <Route 
-                    path="/class/:id" 
+                <Route
+                    path="/class/:id"
                     element={
-                        <ClassViewWrapper 
-                            courses={props.courses} 
+                        <ClassViewWrapper
+                            courses={props.courses}
                             checkTokenLimit={props.checkTokenLimit}
                             incrementTokenUsage={props.incrementTokenUsage}
-                            onAddAssignment={props.onAddAssignment}
-                            onUpdateAssignment={props.onUpdateAssignment}
                             onAddNote={props.onAddNote}
                             onUpdateNote={props.onUpdateNote}
                             onDeleteNote={props.onDeleteNote}
                             onAddDoc={props.onAddDoc}
                             onDeleteDoc={props.onDeleteDoc}
                         />
-                    } 
+                    }
                 />
                 <Route
                     path="/settings"
@@ -321,7 +309,6 @@ const App: React.FC = () => {
                 .from('courses')
                 .select(`
                     *,
-                    assignments (*),
                     notes (*),
                     documents (*)
                 `),
@@ -345,13 +332,6 @@ const App: React.FC = () => {
             subject: c.subject as ClassSubject,
             color: c.color,
             icon: c.icon || 'book',
-            assignments: (c.assignments || []).map((a: any) => ({
-                id: a.id,
-                title: a.title,
-                dueDate: a.due_date,
-                completed: a.completed,
-                grade: a.grade
-            })),
             notes: (c.notes || []).map((n: any) => ({
                 id: n.id,
                 title: n.title,
@@ -476,27 +456,6 @@ const App: React.FC = () => {
         console.error("Error deleting course:", e);
         alert("Failed to delete course");
     }
-  };
-
-  const handleAddAssignment = async (courseId: string, assignmentData: Omit<Assignment, 'id'>) => {
-    try {
-        const newAssignment = await db.addAssignment(courseId, assignmentData);
-        setCourses(prev => prev.map(c => 
-            c.id === courseId 
-                ? { ...c, assignments: [...c.assignments, newAssignment] }
-                : c
-        ));
-    } catch (e) { console.error("DB Error", e); }
-  };
-
-  const handleUpdateAssignment = async (updated: Assignment) => {
-      try {
-          await db.updateAssignment(updated);
-          setCourses(prev => prev.map(c => ({
-              ...c,
-              assignments: c.assignments.map(a => a.id === updated.id ? updated : a)
-          })));
-      } catch (e) { console.error("DB Error", e); }
   };
 
   const handleAddNote = async (courseId: string, noteData: Omit<Note, 'id'>) => {
@@ -676,9 +635,6 @@ const App: React.FC = () => {
                     showPaywall={showPaywall}
                     setShowPaywall={setShowPaywall}
                     paywallReason={paywallReason}
-                    // DB Handlers
-                    onAddAssignment={handleAddAssignment}
-                    onUpdateAssignment={handleUpdateAssignment}
                     onAddNote={handleAddNote}
                     onUpdateNote={handleUpdateNote}
                     onDeleteNote={handleDeleteNote}

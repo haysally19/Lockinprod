@@ -1,6 +1,6 @@
 import React from 'react';
 import { Course } from '../types';
-import { LayoutDashboard, Plus, BookCopy, Calendar, Settings, Zap, Flame, X, Sparkles } from 'lucide-react';
+import { LayoutDashboard, Plus, BookCopy, Settings, Zap, Flame, X, Sparkles } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import Logo from './Logo';
 
@@ -120,24 +120,12 @@ const Sidebar: React.FC<SidebarProps> = ({
             onClick={onClose}
             className={`flex items-center gap-3 px-3 py-2 rounded-xl transition-all font-bold text-xs ${
               currentPath.startsWith('/classes') || currentPath.startsWith('/class/')
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' 
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
                 : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
             }`}
           >
             <BookCopy className="w-4 h-4" />
             <span>My Classes</span>
-          </Link>
-          <Link
-            to="/calendar"
-            onClick={onClose}
-            className={`flex items-center gap-3 px-3 py-2 rounded-xl transition-all font-bold text-xs ${
-              currentPath === '/calendar'
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' 
-                : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
-            }`}
-          >
-            <Calendar className="w-4 h-4" />
-            <span>Calendar</span>
           </Link>
         </nav>
 
