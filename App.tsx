@@ -1,5 +1,5 @@
 import React, { useState, useEffect, ReactNode, Component, lazy, Suspense } from 'react';
-import { HashRouter as Router, Routes, Route, Navigate, useParams } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate, useParams, useNavigate, useLocation } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import LoginScreen from './components/LoginScreen';
 import AddCourseModal from './components/AddCourseModal';
@@ -133,6 +133,17 @@ interface MainLayoutProps {
 
 const MainLayout: React.FC<MainLayoutProps> = (props) => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    useEffect(() => {
+        const isMobile = window.innerWidth < 768;
+        const isRootPath = location.pathname === '/';
+
+        if (isMobile && isRootPath) {
+            navigate('/quick-solve', { replace: true });
+        }
+    }, [navigate, location.pathname]);
 
     return (
         <div className="flex h-screen bg-slate-50 text-slate-900 font-sans overflow-hidden relative">
