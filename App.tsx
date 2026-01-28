@@ -349,13 +349,6 @@ const App: React.FC = () => {
                 title: n.title,
                 content: n.content,
                 createdAt: n.created_at
-            })),
-            documents: (c.documents || []).map((d: any) => ({
-                id: d.id,
-                name: d.name,
-                type: d.type,
-                size: d.size,
-                uploadDate: d.upload_date
             }))
         }));
 

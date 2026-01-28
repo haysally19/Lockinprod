@@ -32,9 +32,7 @@ const AddCourseModal: React.FC<AddCourseModalProps> = ({ isOpen, onClose, onAdd 
       subject,
       color: selectedColor,
       icon: 'book',
-      assignments: [],
-      notes: [],
-      documents: []
+      notes: []
     };
 
     onAdd(newCourse);

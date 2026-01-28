@@ -14,14 +14,6 @@ export interface Note {
   createdAt: string;
 }
 
-export interface CourseDocument {
-  id: string;
-  name: string;
-  type: string; // 'pdf', 'docx', 'img', etc.
-  size: string;
-  uploadDate: string;
-}
-
 export interface Flashcard {
   id: string;
   front: string;
@@ -43,7 +35,6 @@ export interface Course {
   color: string; // Tailwind class for background (e.g., 'bg-blue-500')
   icon: string;
   notes: Note[];
-  documents: CourseDocument[];
   flashcards?: Flashcard[]; // Optional for now, usually generated on fly
 }
 

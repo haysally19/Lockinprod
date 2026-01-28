@@ -15,9 +15,7 @@ const ClassCard: React.FC<ClassCardProps> = ({ course, onDelete }) => {
       await onDelete(course.id);
     }
   };
-  // --- Data Calculations ---
   const totalNotes = course.notes.length;
-  const totalDocs = course.documents?.length || 0;
 
   return (
     <div className="h-full group bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-300 flex flex-col overflow-hidden relative">
@@ -41,20 +39,16 @@ const ClassCard: React.FC<ClassCardProps> = ({ course, onDelete }) => {
           </div>
 
           {/* Study Materials Stats */}
-          <div className="mb-3 grid grid-cols-2 gap-2">
-              <div className="text-center p-2 bg-purple-50 rounded-lg border border-purple-100">
-                  <div className="text-sm font-bold text-purple-700">{totalNotes}</div>
-                  <div className="text-[9px] font-medium text-purple-600 uppercase tracking-wide">Notes</div>
-              </div>
-              <div className="text-center p-2 bg-blue-50 rounded-lg border border-blue-100">
-                  <div className="text-sm font-bold text-blue-700">{totalDocs}</div>
-                  <div className="text-[9px] font-medium text-blue-600 uppercase tracking-wide">Docs</div>
+          <div className="mb-3">
+              <div className="text-center p-3 bg-slate-50 rounded-lg border border-slate-200">
+                  <div className="text-lg font-bold text-slate-700">{totalNotes}</div>
+                  <div className="text-[10px] font-medium text-slate-500 uppercase tracking-wide">Study Notes</div>
               </div>
           </div>
 
           {/* AI Study Status */}
           <div className="flex-1 min-h-[38px] flex flex-col justify-end">
-            <div className="flex items-center gap-2 p-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-100">
+            <div className="flex items-center gap-2 p-2 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg border border-blue-100">
                 <MessageSquare className="w-3 h-3 flex-shrink-0 text-blue-600" />
                 <span className="text-xs text-blue-900 font-medium">AI Tutor Available</span>
             </div>
