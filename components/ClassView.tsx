@@ -110,6 +110,8 @@ const ClassView: React.FC<ClassViewProps> = ({
                 checkTokenLimit={checkTokenLimit}
                 incrementTokenUsage={incrementTokenUsage}
                 onNavigateToDashboard={() => {}}
+                courseId={course.id}
+                courseName={course.name}
             />
             )}
 

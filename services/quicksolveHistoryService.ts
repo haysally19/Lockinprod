@@ -6,47 +6,65 @@ export interface QuickSolveHistoryItem {
   image_data: string;
   solution: string;
   explanation_mode: 'nerd' | 'bro';
+  course_id?: string | null;
   created_at: string;
 }
 
 export const saveQuickSolveHistory = async (
   imageData: string,
   solution: string,
-  explanationMode: 'nerd' | 'bro'
-): Promise<void> => {
+  explanationMode: 'nerd' | 'bro',
+  courseId?: string | null
+): Promise<string | null> => {
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
     console.warn('User not authenticated, skipping history save');
-    return;
+    return null;
   }
 
-  const { error } = await supabase
+  const insertData: any = {
+    user_id: user.id,
+    image_data: imageData,
+    solution: solution,
+    explanation_mode: explanationMode
+  };
+
+  if (courseId) {
+    insertData.course_id = courseId;
+  }
+
+  const { data, error } = await supabase
     .from('quicksolve_history')
-    .insert({
-      user_id: user.id,
-      image_data: imageData,
-      solution: solution,
-      explanation_mode: explanationMode
-    });
+    .insert(insertData)
+    .select()
+    .single();
 
   if (error) {
     console.error('Error saving quicksolve history:', error);
     throw new Error('Failed to save history');
   }
+
+  return data?.id || null;
 };
 
-export const getQuickSolveHistory = async (limit: number = 20): Promise<QuickSolveHistoryItem[]> => {
+export const getQuickSolveHistory = async (limit: number = 20, courseId?: string): Promise<QuickSolveHistoryItem[]> => {
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
     return [];
   }
 
-  const { data, error } = await supabase
+  let query = supabase
     .from('quicksolve_history')
     .select('*')
-    .eq('user_id', user.id)
+    .eq('user_id', user.id);
+
+  if (courseId) {
+    query = query.eq('course_id', courseId);
+  }
+
+  const { data, error } = await query
     .order('created_at', { ascending: false })
     .limit(limit);
 

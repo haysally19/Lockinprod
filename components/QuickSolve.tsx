@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Camera, Upload, Sparkles, Zap, BookOpen, ArrowRight, RotateCcw, X, Clipboard, History, Trash2, Loader2, MessageSquare, Send } from 'lucide-react';
+import { Camera, Upload, Sparkles, Zap, BookOpen, ArrowRight, RotateCcw, X, Clipboard, History, Trash2, Loader2, MessageSquare, Send, Save } from 'lucide-react';
 import { solveWithVision, generateSimilarProblems } from '../services/geminiService';
 import { saveQuickSolveHistory, getQuickSolveHistory, deleteQuickSolveHistoryItem, QuickSolveHistoryItem } from '../services/quicksolveHistoryService';
 import { submitCameraFeedback } from '../services/feedbackService';
+import { createFlashcardDeckFromQuickSolve } from '../services/studyMaterialsService';
 import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
@@ -12,11 +13,13 @@ interface QuickSolveProps {
   checkTokenLimit: () => boolean;
   incrementTokenUsage: () => void;
   onNavigateToDashboard: () => void;
+  courseId?: string;
+  courseName?: string;
 }
 
 type ExplanationMode = 'nerd' | 'bro';
 
-const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementTokenUsage, onNavigateToDashboard }) => {
+const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementTokenUsage, onNavigateToDashboard, courseId, courseName }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [solution, setSolution] = useState<string>('');
@@ -33,6 +36,9 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
   const [feedbackType, setFeedbackType] = useState<'wrong_answer' | 'unclear' | 'bug' | 'suggestion' | 'other'>('other');
   const [feedbackText, setFeedbackText] = useState('');
   const [feedbackSubmitting, setFeedbackSubmitting] = useState(false);
+  const [savedQuickSolveId, setSavedQuickSolveId] = useState<string | null>(null);
+  const [flashcardSaved, setFlashcardSaved] = useState(false);
+  const [savingFlashcard, setSavingFlashcard] = useState(false);
 
   useEffect(() => {
     startCamera();
@@ -148,7 +154,9 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
       // Save to history
       if (imgToSolve && result) {
         try {
-          await saveQuickSolveHistory(imgToSolve, result, explanationMode);
+          const savedId = await saveQuickSolveHistory(imgToSolve, result, explanationMode, courseId);
+          setSavedQuickSolveId(savedId);
+          setFlashcardSaved(false);
         } catch (err) {
           console.error('Failed to save to history:', err);
         }
@@ -183,8 +191,34 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
     setSolution('');
     setShowSimilarQuestions(false);
     setSimilarQuestions([]);
+    setSavedQuickSolveId(null);
+    setFlashcardSaved(false);
     stopCamera();
     startCamera();
+  };
+
+  const handleSaveAsFlashcard = async () => {
+    if (!courseId || !savedQuickSolveId || !selectedImage || !solution) {
+      alert('Cannot save flashcard: missing required data');
+      return;
+    }
+
+    setSavingFlashcard(true);
+    try {
+      await createFlashcardDeckFromQuickSolve(
+        courseId,
+        savedQuickSolveId,
+        'Problem from Quick Solve',
+        solution
+      );
+      setFlashcardSaved(true);
+      alert('Flashcard saved successfully! You can review it in the Study tab.');
+    } catch (error) {
+      console.error('Error saving flashcard:', error);
+      alert('Failed to save flashcard. Please try again.');
+    } finally {
+      setSavingFlashcard(false);
+    }
   };
 
   const loadHistory = useCallback(async () => {
@@ -451,6 +485,40 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
                   )}
 
                   <div className="space-y-3">
+                    {courseId && courseName && (
+                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <div>
+                            <p className="text-xs font-bold text-blue-900 uppercase tracking-wide">Saved to Class</p>
+                            <p className="text-sm font-bold text-slate-900 mt-0.5">{courseName}</p>
+                          </div>
+                          {flashcardSaved && (
+                            <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-bold">
+                              Flashcard Saved
+                            </span>
+                          )}
+                        </div>
+                        {!flashcardSaved && (
+                          <button
+                            onClick={handleSaveAsFlashcard}
+                            disabled={savingFlashcard}
+                            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-slate-600 disabled:to-slate-600 text-white px-4 py-3 rounded-lg font-bold transition-all flex items-center justify-center gap-2"
+                          >
+                            {savingFlashcard ? (
+                              <>
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                                Saving...
+                              </>
+                            ) : (
+                              <>
+                                <Save className="w-4 h-4" />
+                                Save as Flashcard
+                              </>
+                            )}
+                          </button>
+                        )}
+                      </div>
+                    )}
                     <button
                       onClick={() => setShowFeedback(true)}
                       className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2"
