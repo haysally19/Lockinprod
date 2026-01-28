@@ -252,45 +252,28 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDMpIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-20" style={{ top: 'env(safe-area-inset-top)' }}></div>
 
       <div className="relative h-full flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 bg-slate-900/50 backdrop-blur-sm border-b border-slate-700/50" style={{ paddingLeft: 'max(1rem, env(safe-area-inset-left))', paddingRight: 'max(1rem, env(safe-area-inset-right))' }}>
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-              <Zap className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h1 className="text-white font-bold text-lg md:text-xl">Quick Solve</h1>
-              <p className="text-slate-400 text-xs">Get answers instantly</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={openHistory}
-              className="p-2.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors active:scale-95"
-            >
-              <History className="w-6 h-6" />
-            </button>
-            <button
-              onClick={onNavigateToDashboard}
-              className="p-2.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors active:scale-95"
-            >
-              <BookOpen className="w-6 h-6" />
-            </button>
-          </div>
-        </div>
-
         {/* Main Content */}
-        <div className="flex-1 overflow-y-auto p-4 flex flex-col" style={{ paddingLeft: 'max(1rem, env(safe-area-inset-left))', paddingRight: 'max(1rem, env(safe-area-inset-right))', paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
+        <div className="flex-1 overflow-y-auto flex flex-col" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
 
           {!selectedImage && (
             <div className="flex-1 flex flex-col">
-              <div className="relative rounded-2xl overflow-hidden bg-black flex-1 min-h-[60vh] md:min-h-[400px]">
+              <div className="relative bg-black flex-1 h-full md:rounded-2xl md:overflow-hidden">
                 <video
                   ref={videoRef}
                   autoPlay
                   playsInline
                   className="w-full h-full object-cover"
                 />
+
+                {/* History Button Overlay */}
+                <div className="absolute top-4 right-4 z-10" style={{ top: 'max(1rem, env(safe-area-inset-top))', right: 'max(1rem, env(safe-area-inset-right))' }}>
+                  <button
+                    onClick={openHistory}
+                    className="p-3 bg-black/40 backdrop-blur-md hover:bg-black/60 text-white rounded-full transition-all active:scale-95 shadow-xl border border-white/20"
+                  >
+                    <History className="w-6 h-6" />
+                  </button>
+                </div>
 
                 {/* Suggestion Box Overlay */}
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none p-8">
@@ -312,8 +295,8 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
                 </div>
 
                 {/* iPhone-style overlay controls */}
-                <div className="absolute bottom-0 left-0 right-0 pb-8 pt-20 bg-gradient-to-t from-black/60 to-transparent">
-                  <div className="flex items-center justify-center gap-8 px-4">
+                <div className="absolute bottom-0 left-0 right-0 pb-8 pt-20 bg-gradient-to-t from-black/60 to-transparent" style={{ paddingBottom: 'max(2rem, env(safe-area-inset-bottom))' }}>
+                  <div className="flex items-center justify-center gap-8 px-4" style={{ paddingLeft: 'max(1rem, env(safe-area-inset-left))', paddingRight: 'max(1rem, env(safe-area-inset-right))' }}>
                     <button
                       onClick={() => fileInputRef.current?.click()}
                       className="w-12 h-12 bg-white/20 backdrop-blur-md hover:bg-white/30 text-white rounded-full transition-all flex items-center justify-center active:scale-95 shadow-lg border-2 border-white/40"
@@ -342,7 +325,7 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
           />
 
           {selectedImage && (
-            <div className="space-y-4">
+            <div className="space-y-4 p-4" style={{ paddingLeft: 'max(1rem, env(safe-area-inset-left))', paddingRight: 'max(1rem, env(safe-area-inset-right))' }}>
               <div className="relative rounded-2xl overflow-hidden border-2 border-slate-700 bg-slate-800">
                 <img src={selectedImage} alt="Problem" className="w-full h-auto" />
                 <button
@@ -490,10 +473,10 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
         </div>
       </div>
 
-      {/* History Panel */}
+      {/* History Panel - Overlays the camera */}
       {showHistory && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-end md:items-center md:justify-center">
-          <div className="bg-slate-800 rounded-t-3xl md:rounded-3xl w-full md:max-w-2xl h-[85vh] md:h-[600px] flex flex-col shadow-2xl border border-slate-700">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-end md:items-center md:justify-center" style={{ top: 'env(safe-area-inset-top)' }}>
+          <div className="bg-slate-800/95 backdrop-blur-xl rounded-t-3xl md:rounded-3xl w-full md:max-w-2xl h-[85vh] md:h-[600px] flex flex-col shadow-2xl border border-slate-700">
             <div className="p-6 border-b border-slate-700 flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-bold text-white flex items-center gap-2">
