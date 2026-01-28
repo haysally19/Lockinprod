@@ -76,8 +76,8 @@ const ClassView: React.FC<ClassViewProps> = ({
             </div>
           </div>
 
-          {/* Premium Segmented Control Tabs - Compact */}
-          <div className="flex-1 overflow-x-auto no-scrollbar flex justify-end">
+          {/* Desktop Tabs - Hidden on Mobile */}
+          <div className="hidden md:flex flex-1 overflow-x-auto no-scrollbar justify-end">
              <div className="flex items-center gap-1">
                 {tabs.map((tab) => {
                     const Icon = tab.icon;
@@ -86,14 +86,14 @@ const ClassView: React.FC<ClassViewProps> = ({
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as TabView)}
-                            className={`flex items-center gap-1.5 px-2.5 md:px-3 py-2 md:py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap flex-shrink-0 active:scale-95 ${
+                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap flex-shrink-0 active:scale-95 ${
                             isActive
                                 ? 'bg-slate-800 text-white shadow-sm'
                                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                             }`}
                         >
-                            <Icon className={`w-4 h-4 md:w-3.5 md:h-3.5 ${isActive ? 'text-white' : 'text-slate-500'}`} strokeWidth={2} />
-                            <span className="hidden sm:inline">{tab.label}</span>
+                            <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-slate-500'}`} strokeWidth={2} />
+                            <span>{tab.label}</span>
                         </button>
                     );
                 })}
@@ -103,7 +103,7 @@ const ClassView: React.FC<ClassViewProps> = ({
       </header>
 
       {/* Main Content View with Animation Container */}
-      <div className="flex-1 overflow-hidden relative">
+      <div className="flex-1 overflow-hidden relative pb-16 md:pb-0">
         <div className="h-full w-full animate-in fade-in duration-300">
             {activeTab === 'quicksolve' && (
             <QuickSolve
@@ -151,6 +151,44 @@ const ClassView: React.FC<ClassViewProps> = ({
             )}
         </div>
       </div>
+
+      {/* Mobile Bottom Navigation Bar */}
+      <nav
+        className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-50 safe-area-pb"
+        style={{
+          paddingBottom: 'env(safe-area-inset-bottom)',
+          paddingLeft: 'env(safe-area-inset-left)',
+          paddingRight: 'env(safe-area-inset-right)'
+        }}
+      >
+        <div className="grid grid-cols-4 gap-1 px-2 py-1">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as TabView)}
+                className={`flex flex-col items-center justify-center gap-1 py-2 px-1 rounded-xl transition-all active:scale-95 ${
+                  isActive
+                    ? 'bg-slate-100'
+                    : 'text-slate-500'
+                }`}
+              >
+                <Icon
+                  className={`w-6 h-6 ${isActive ? 'text-slate-900' : 'text-slate-400'}`}
+                  strokeWidth={isActive ? 2.5 : 2}
+                />
+                <span className={`text-[10px] font-semibold ${
+                  isActive ? 'text-slate-900' : 'text-slate-500'
+                }`}>
+                  {tab.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </nav>
     </div>
   );
 };
