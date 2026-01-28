@@ -291,6 +291,26 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
                   playsInline
                   className="w-full h-full object-cover"
                 />
+
+                {/* Suggestion Box Overlay */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none p-8">
+                  <div className="w-full max-w-md aspect-[4/3] border-4 border-white/60 rounded-3xl relative shadow-2xl">
+                    {/* Corner indicators */}
+                    <div className="absolute -top-1 -left-1 w-8 h-8 border-t-4 border-l-4 border-blue-400 rounded-tl-xl"></div>
+                    <div className="absolute -top-1 -right-1 w-8 h-8 border-t-4 border-r-4 border-blue-400 rounded-tr-xl"></div>
+                    <div className="absolute -bottom-1 -left-1 w-8 h-8 border-b-4 border-l-4 border-blue-400 rounded-bl-xl"></div>
+                    <div className="absolute -bottom-1 -right-1 w-8 h-8 border-b-4 border-r-4 border-blue-400 rounded-br-xl"></div>
+
+                    {/* Instruction text */}
+                    <div className="absolute -top-16 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur-md px-6 py-3 rounded-2xl border-2 border-white/30 whitespace-nowrap">
+                      <p className="text-white font-bold text-sm md:text-base flex items-center gap-2">
+                        <Camera className="w-5 h-5 text-blue-400" />
+                        Point at your problem
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
                 {/* iPhone-style overlay controls */}
                 <div className="absolute bottom-0 left-0 right-0 pb-8 pt-20 bg-gradient-to-t from-black/60 to-transparent">
                   <div className="flex items-center justify-center gap-8 px-4">
