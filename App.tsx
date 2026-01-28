@@ -127,17 +127,6 @@ interface MainLayoutProps {
 
 const MainLayout: React.FC<MainLayoutProps> = (props) => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const navigate = useNavigate();
-    const location = useLocation();
-
-    useEffect(() => {
-        const isMobile = window.innerWidth < 768;
-        const isRootPath = location.pathname === '/';
-
-        if (isMobile && isRootPath) {
-            navigate('/quick-solve', { replace: true });
-        }
-    }, [navigate, location.pathname]);
 
     return (
         <div className="flex h-screen bg-slate-50 text-slate-900 font-sans overflow-hidden relative" style={{ paddingTop: 'env(safe-area-inset-top)' }}>

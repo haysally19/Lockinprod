@@ -31,8 +31,8 @@ const Dashboard: React.FC<DashboardProps> = ({ courses, streak, userTier, tierLo
   }).filter(c => c.count > 0);
 
   return (
-    <div className="h-full bg-[#f8fafc] overflow-y-auto no-scrollbar scroll-smooth">
-      <div className="p-4 md:p-6 max-w-[1600px] mx-auto w-full pb-24 md:pb-12" style={{ paddingLeft: 'max(1rem, env(safe-area-inset-left))', paddingRight: 'max(1rem, env(safe-area-inset-right))' }}>
+    <div className="h-full bg-[#f8fafc] overflow-y-auto no-scrollbar scroll-smooth" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+      <div className="p-4 md:p-6 max-w-[1600px] mx-auto w-full pb-8 md:pb-12" style={{ paddingLeft: 'max(1rem, env(safe-area-inset-left))', paddingRight: 'max(1rem, env(safe-area-inset-right))', paddingBottom: 'max(2rem, env(safe-area-inset-bottom))' }}>
         
         {/* Header Section - Compact */}
         <div className="mb-5 md:mb-6 flex flex-col md:flex-row md:items-end justify-between gap-3 md:gap-4 animate-in slide-in-from-bottom-2 duration-500">
