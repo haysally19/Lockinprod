@@ -61,4 +61,4 @@ export interface EssayFeedback {
   improvements: string[];
 }
 
-export type TabView = 'quicksolve' | 'chat' | 'notes' | 'grader' | 'docs' | 'study';
+export type TabView = 'quicksolve' | 'chat' | 'notes' | 'grader' | 'study';

@@ -3,7 +3,7 @@ import { HashRouter as Router, Routes, Route, Navigate, useParams, useNavigate, 
 import Sidebar from './components/Sidebar';
 import LoginScreen from './components/LoginScreen';
 import AddCourseModal from './components/AddCourseModal';
-import { Course, ClassSubject, Note, CourseDocument } from './types';
+import { Course, ClassSubject, Note } from './types';
 import Dashboard from './components/Dashboard';
 import PaywallModal from './components/PaywallModal';
 import { Menu } from 'lucide-react';
@@ -73,9 +73,7 @@ const ClassViewWrapper: React.FC<{
   incrementTokenUsage: () => void,
   onAddNote: (cid: string, n: any) => Promise<string>,
   onUpdateNote: (n: any) => Promise<void>,
-  onDeleteNote: (id: string) => Promise<void>,
-  onAddDoc: (cid: string, d: any) => Promise<void>,
-  onDeleteDoc: (id: string) => Promise<void>
+  onDeleteNote: (id: string) => Promise<void>
 }> = (props) => {
   const { id } = useParams<{ id: string }>();
   const course = props.courses.find(c => c.id === id);
@@ -90,8 +88,6 @@ const ClassViewWrapper: React.FC<{
           onAddNote={props.onAddNote}
           onUpdateNote={props.onUpdateNote}
           onDeleteNote={props.onDeleteNote}
-          onAddDoc={props.onAddDoc}
-          onDeleteDoc={props.onDeleteDoc}
       />
   );
 };
@@ -126,9 +122,7 @@ interface MainLayoutProps {
     paywallReason: 'course_limit' | 'token_limit' | 'upgrade';
     onAddNote: (cid: string, n: any) => Promise<string>,
     onUpdateNote: (n: any) => Promise<void>,
-    onDeleteNote: (id: string) => Promise<void>,
-    onAddDoc: (cid: string, d: any) => Promise<void>,
-    onDeleteDoc: (id: string) => Promise<void>
+    onDeleteNote: (id: string) => Promise<void>
 }
 
 const MainLayout: React.FC<MainLayoutProps> = (props) => {
@@ -200,8 +194,6 @@ const MainLayout: React.FC<MainLayoutProps> = (props) => {
                               onAddNote={props.onAddNote}
                               onUpdateNote={props.onUpdateNote}
                               onDeleteNote={props.onDeleteNote}
-                              onAddDoc={props.onAddDoc}
-                              onDeleteDoc={props.onDeleteDoc}
                           />
                       }
                   />
@@ -510,27 +502,6 @@ const App: React.FC = () => {
       } catch (e) { console.error("DB Error", e); }
   };
 
-  const handleAddDoc = async (courseId: string, docData: Omit<CourseDocument, 'id'>) => {
-      try {
-          const newDoc = await db.addDocument(courseId, docData);
-          setCourses(prev => prev.map(c => 
-              c.id === courseId 
-                  ? { ...c, documents: [...c.documents, newDoc] }
-                  : c
-          ));
-      } catch (e) { console.error("DB Error", e); }
-  };
-
-  const handleDeleteDoc = async (id: string) => {
-      try {
-          await db.deleteDocument(id);
-          setCourses(prev => prev.map(c => ({
-              ...c,
-              documents: c.documents.filter(d => d.id !== id)
-          })));
-      } catch (e) { console.error("DB Error", e); }
-  };
-
   const handleLogin = () => {
     setIsAuthenticated(true);
     fetchData();
@@ -658,8 +629,6 @@ const App: React.FC = () => {
                     onAddNote={handleAddNote}
                     onUpdateNote={handleUpdateNote}
                     onDeleteNote={handleDeleteNote}
-                    onAddDoc={handleAddDoc}
-                    onDeleteDoc={handleDeleteDoc}
                 />
             } />
           ) : (

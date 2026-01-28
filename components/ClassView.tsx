@@ -1,12 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Course, TabView, Note, CourseDocument } from '../types';
-import { MessageSquare, FileText, GraduationCap, Files, BrainCircuit, Zap } from 'lucide-react';
+import { Course, TabView, Note } from '../types';
+import { MessageSquare, FileText, GraduationCap, BrainCircuit, Zap } from 'lucide-react';
 import ChatInterface from './ChatInterface';
 import EssayGrader from './EssayGrader';
 import NotesModule from './NotesModule';
-import DocsModule from './DocsModule';
 import StudyCenter from './StudyCenter';
 import QuickSolve from './QuickSolve';
 
@@ -17,8 +16,6 @@ interface ClassViewProps {
   onAddNote: (courseId: string, n: Omit<Note, 'id'>) => Promise<string>;
   onUpdateNote: (n: Note) => Promise<void>;
   onDeleteNote: (id: string) => Promise<void>;
-  onAddDoc: (courseId: string, d: Omit<CourseDocument, 'id'>) => Promise<void>;
-  onDeleteDoc: (id: string) => Promise<void>;
 }
 
 const ClassView: React.FC<ClassViewProps> = ({
@@ -27,9 +24,7 @@ const ClassView: React.FC<ClassViewProps> = ({
   incrementTokenUsage,
   onAddNote,
   onUpdateNote,
-  onDeleteNote,
-  onAddDoc,
-  onDeleteDoc
+  onDeleteNote
 }) => {
   const location = useLocation();
   const isMobile = window.innerWidth < 768;
@@ -48,7 +43,6 @@ const ClassView: React.FC<ClassViewProps> = ({
     { id: 'study', label: 'Study', icon: BrainCircuit },
     { id: 'grader', label: 'Grader', icon: GraduationCap },
     { id: 'notes', label: 'Notes', icon: FileText },
-    { id: 'docs', label: 'Library', icon: Files },
   ];
 
   const desktopFirstTabs: { id: TabView; label: string; icon: any }[] = [
@@ -56,7 +50,6 @@ const ClassView: React.FC<ClassViewProps> = ({
     { id: 'study', label: 'Study', icon: BrainCircuit },
     { id: 'grader', label: 'Grader', icon: GraduationCap },
     { id: 'notes', label: 'Notes', icon: FileText },
-    { id: 'docs', label: 'Library', icon: Files },
   ];
 
   const tabs = isMobile ? mobileFirstTabs : desktopFirstTabs;
@@ -154,14 +147,6 @@ const ClassView: React.FC<ClassViewProps> = ({
                 onDeleteNote={onDeleteNote}
                 checkTokenLimit={checkTokenLimit}
                 incrementTokenUsage={incrementTokenUsage}
-            />
-            )}
-
-            {activeTab === 'docs' && (
-            <DocsModule
-                documents={course.documents || []}
-                onAddDoc={(d) => onAddDoc(course.id, d)}
-                onDeleteDoc={onDeleteDoc}
             />
             )}
         </div>
