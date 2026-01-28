@@ -303,7 +303,7 @@ Be comprehensive, accurate, and pedagogically sound. Show professional-grade pro
 
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash-exp',
+      model: 'gemini-3-pro-preview',
       contents: [
         {
           role: 'user',
