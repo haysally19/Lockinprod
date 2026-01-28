@@ -243,7 +243,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ course, initialMessage, o
             {messages.map((msg, idx) => (
             <div key={idx} className={`flex gap-2 md:gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
                 <div className={`w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                msg.role === 'model' ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white' : 'bg-slate-200 text-slate-600'
+                msg.role === 'model' ? 'bg-gradient-to-br from-blue-500 to-blue-700 text-white' : 'bg-slate-200 text-slate-600'
                 }`}>
                 {msg.role === 'model' ? <Bot className="w-4 h-4 md:w-5 md:h-5" /> : <User className="w-4 h-4 md:w-5 md:h-5" />}
                 </div>
@@ -286,7 +286,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ course, initialMessage, o
             ))}
             {isLoading && messages.length > 0 && messages[messages.length - 1].role === 'user' && (
             <div className="flex gap-2 md:gap-4">
-                <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center flex-shrink-0">
+                <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-white flex items-center justify-center flex-shrink-0">
                     <Sparkles className="w-4 h-4 animate-pulse" />
                 </div>
                 <div className="bg-slate-50 border border-slate-100 rounded-2xl p-3 md:p-4">
