@@ -52,9 +52,9 @@ const Navbar: React.FC = () => {
                     : 'bg-white/90 backdrop-blur-md border-b border-slate-200/50 py-3 shadow-sm'
             }`}
         >
-            <div className="container mx-auto px-6 flex items-center justify-between" style={{ paddingLeft: 'max(1.5rem, env(safe-area-inset-left))', paddingRight: 'max(1.5rem, env(safe-area-inset-right))' }}>
+            <div className="container mx-auto px-4 md:px-6 flex items-center justify-between" style={{ paddingLeft: 'max(1rem, env(safe-area-inset-left))', paddingRight: 'max(1rem, env(safe-area-inset-right))' }}>
                 <Link to="/" className="flex items-center group relative z-[101]">
-                    <div className="h-20 w-auto transition-transform duration-300 group-hover:scale-105">
+                    <div className="h-16 md:h-20 w-auto transition-transform duration-300 group-hover:scale-105">
                         <Logo showText={true} />
                     </div>
                 </Link>
@@ -92,42 +92,42 @@ const Navbar: React.FC = () => {
 
                 {/* Mobile Nav Button */}
                 <div className="md:hidden relative z-[101]">
-                    <button 
-                        onClick={() => setIsOpen(!isOpen)} 
-                        className={`p-2 rounded-full transition-colors ${menuButtonColor}`}
+                    <button
+                        onClick={() => setIsOpen(!isOpen)}
+                        className={`p-3 rounded-full transition-colors ${menuButtonColor}`}
                         aria-label="Toggle Menu"
                     >
-                        {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                        {isOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
                     </button>
                 </div>
             </div>
 
             {/* Mobile Nav Menu Overlay */}
-            <div className={`fixed inset-0 bg-white z-[90] transition-transform duration-300 md:hidden flex flex-col pt-24 px-6 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`} style={{ paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))', paddingLeft: 'max(1.5rem, env(safe-area-inset-left))', paddingRight: 'max(1.5rem, env(safe-area-inset-right))' }}>
-                <nav className="flex flex-col space-y-6 text-center">
+            <div className={`fixed inset-0 bg-white z-[90] transition-transform duration-300 md:hidden flex flex-col pt-20 px-4 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`} style={{ paddingTop: 'max(5rem, env(safe-area-inset-top))', paddingBottom: 'max(2rem, env(safe-area-inset-bottom))', paddingLeft: 'max(1rem, env(safe-area-inset-left))', paddingRight: 'max(1rem, env(safe-area-inset-right))' }}>
+                <nav className="flex flex-col space-y-5 text-center pt-8">
                      {navLinks.map(link => (
                         <a
                             key={link.name}
                             href={link.href}
                             onClick={(e) => handleSmoothScroll(e, link.href)}
-                            className="text-2xl font-bold text-slate-800"
+                            className="text-3xl font-bold text-slate-800 py-2 active:scale-95 transition-transform"
                         >
                             {link.name}
                         </a>
                     ))}
-                    <hr className="border-slate-100" />
-                    <Link 
-                        to="/login" 
-                        onClick={() => setIsOpen(false)} 
-                        className="text-xl font-semibold text-slate-600"
+                    <hr className="border-slate-200 my-2" />
+                    <Link
+                        to="/login"
+                        onClick={() => setIsOpen(false)}
+                        className="text-2xl font-semibold text-slate-600 py-2 active:scale-95 transition-transform"
                     >
                         Log In
                     </Link>
-                    <Link 
-                        to="/login" 
-                        state={{ isSignUp: true }} 
-                        onClick={() => setIsOpen(false)} 
-                        className="bg-blue-600 text-white px-6 py-4 rounded-xl text-lg font-bold shadow-lg shadow-blue-500/30"
+                    <Link
+                        to="/login"
+                        state={{ isSignUp: true }}
+                        onClick={() => setIsOpen(false)}
+                        className="bg-blue-600 text-white px-8 py-5 rounded-2xl text-xl font-bold shadow-xl shadow-blue-500/30 active:scale-95 transition-all mt-4"
                     >
                         Get Started Free
                     </Link>

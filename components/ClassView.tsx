@@ -62,16 +62,16 @@ const ClassView: React.FC<ClassViewProps> = ({
   return (
     <div className="flex flex-col h-full bg-[#fcfdfe] overflow-hidden">
       {/* Dynamic Native-style Header - Compact Version */}
-      <header className="bg-white border-b border-slate-200 z-[30] flex-shrink-0 shadow-[0_1px_2px_0_rgba(0,0,0,0.02)]">
-        <div className="max-w-screen-2xl mx-auto w-full px-4 py-2.5 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className={`w-9 h-9 rounded-lg ${course.color} flex items-center justify-center text-white/95 font-bold shadow-sm flex-shrink-0 text-sm`}>
+      <header className="bg-white border-b border-slate-200 z-[30] flex-shrink-0 shadow-[0_1px_2px_0_rgba(0,0,0,0.02)]" style={{ paddingLeft: 'env(safe-area-inset-left)', paddingRight: 'env(safe-area-inset-right)' }}>
+        <div className="max-w-screen-2xl mx-auto w-full px-3 md:px-4 py-2 md:py-2.5 flex items-center justify-between gap-2 md:gap-4">
+          <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-shrink">
+            <div className={`w-10 h-10 md:w-9 md:h-9 rounded-lg ${course.color} flex items-center justify-center text-white/95 font-bold shadow-sm flex-shrink-0 text-sm`}>
               {course.name.substring(0, 2).toUpperCase()}
             </div>
             <div className="min-w-0 flex flex-col justify-center">
-              <h1 className="text-lg font-bold text-slate-900 leading-tight truncate tracking-tight">{course.name}</h1>
+              <h1 className="text-base md:text-lg font-bold text-slate-900 leading-tight truncate tracking-tight">{course.name}</h1>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wide truncate">{course.subject}</span>
+                <span className="text-[9px] md:text-[10px] font-medium text-slate-500 uppercase tracking-wide truncate">{course.subject}</span>
               </div>
             </div>
           </div>
@@ -86,14 +86,14 @@ const ClassView: React.FC<ClassViewProps> = ({
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as TabView)}
-                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap flex-shrink-0 active:scale-95 ${
+                            className={`flex items-center gap-1.5 px-2.5 md:px-3 py-2 md:py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap flex-shrink-0 active:scale-95 ${
                             isActive
                                 ? 'bg-slate-800 text-white shadow-sm'
                                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                             }`}
                         >
-                            <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-slate-500'}`} strokeWidth={2} />
-                            <span>{tab.label}</span>
+                            <Icon className={`w-4 h-4 md:w-3.5 md:h-3.5 ${isActive ? 'text-white' : 'text-slate-500'}`} strokeWidth={2} />
+                            <span className="hidden sm:inline">{tab.label}</span>
                         </button>
                     );
                 })}

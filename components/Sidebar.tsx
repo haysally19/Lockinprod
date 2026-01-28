@@ -66,19 +66,19 @@ const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Sidebar Content */}
       <div className={`
-        fixed md:relative inset-y-0 left-0 w-64 bg-white border-r border-slate-200 h-full flex flex-col flex-shrink-0 z-50
+        fixed md:relative inset-y-0 left-0 w-72 md:w-64 bg-white border-r border-slate-200 h-full flex flex-col flex-shrink-0 z-50
         transition-transform duration-300 ease-in-out
         ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
       `}
       style={{
-        paddingLeft: 'env(safe-area-inset-left)',
+        paddingLeft: 'max(0.5rem, env(safe-area-inset-left))',
         paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))'
       }}
       >
         {/* Mobile Close Button */}
-        <button 
+        <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 md:hidden"
+          className="absolute top-5 right-5 p-3 text-slate-400 hover:text-slate-600 active:scale-95 transition-all md:hidden bg-slate-100 rounded-full"
         >
           <X className="w-6 h-6" />
         </button>
@@ -89,76 +89,76 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </div>
 
-        <nav className="px-3 py-4 space-y-1">
-          <h2 className="px-3 pb-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Main Menu</h2>
+        <nav className="px-4 py-4 space-y-2">
+          <h2 className="px-3 pb-2 text-[10px] md:text-[9px] font-bold text-slate-400 uppercase tracking-wider">Main Menu</h2>
           <Link
             to="/"
             onClick={onClose}
-            className={`flex items-center gap-3 px-3 py-2 rounded-xl transition-all font-bold text-xs ${
+            className={`flex items-center gap-3 px-4 py-3 md:py-2 md:px-3 rounded-xl transition-all font-bold text-sm md:text-xs active:scale-95 ${
               currentPath === '/'
                 ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
                 : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
             }`}
           >
-            <LayoutDashboard className="w-4 h-4" />
+            <LayoutDashboard className="w-5 h-5 md:w-4 md:h-4" />
             <span>Dashboard</span>
           </Link>
           <Link
             to="/quick-solve"
             onClick={onClose}
-            className={`flex items-center gap-3 px-3 py-2 rounded-xl transition-all font-bold text-xs ${
+            className={`flex items-center gap-3 px-4 py-3 md:py-2 md:px-3 rounded-xl transition-all font-bold text-sm md:text-xs active:scale-95 ${
               currentPath === '/quick-solve'
                 ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
                 : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
             }`}
           >
-            <Sparkles className="w-4 h-4" />
+            <Sparkles className="w-5 h-5 md:w-4 md:h-4" />
             <span>Quick Solve</span>
           </Link>
           <Link
             to="/classes"
             onClick={onClose}
-            className={`flex items-center gap-3 px-3 py-2 rounded-xl transition-all font-bold text-xs ${
+            className={`flex items-center gap-3 px-4 py-3 md:py-2 md:px-3 rounded-xl transition-all font-bold text-sm md:text-xs active:scale-95 ${
               currentPath.startsWith('/classes') || currentPath.startsWith('/class/')
                 ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
                 : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
             }`}
           >
-            <BookCopy className="w-4 h-4" />
+            <BookCopy className="w-5 h-5 md:w-4 md:h-4" />
             <span>My Classes</span>
           </Link>
         </nav>
 
-        <div className="flex-1 overflow-y-auto px-3 no-scrollbar mt-2">
-          <h2 className="px-3 pt-2 pb-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+        <div className="flex-1 overflow-y-auto px-4 no-scrollbar mt-2">
+          <h2 className="px-3 pt-2 pb-2 text-[10px] md:text-[9px] font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
               <span>Quick Access</span>
-              <span className="bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded text-[10px]">{courses.length}</span>
+              <span className="bg-slate-100 text-slate-500 px-2 py-1 rounded text-[10px]">{courses.length}</span>
           </h2>
 
-          <div className="space-y-1">
+          <div className="space-y-2 md:space-y-1">
               {courses.slice(0, 10).map((course, index) => (
               <Link
                   key={course.id}
                   to={`/class/${course.id}`}
                   onClick={onClose}
                   data-class-link={index === 0 ? true : undefined}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all group ${
+                  className={`flex items-center gap-3 px-4 py-3 md:py-2 md:px-3 rounded-lg transition-all group active:scale-95 ${
                   currentPath === `/class/${course.id}`
                       ? 'bg-slate-100 text-slate-900 font-bold'
                       : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
                   }`}
               >
-                  <div className={`w-2 h-2 rounded-full ${course.color}`} />
-                  <span className="truncate text-xs font-medium">{course.name}</span>
+                  <div className={`w-3 h-3 md:w-2 md:h-2 rounded-full ${course.color}`} />
+                  <span className="truncate text-sm md:text-xs font-medium">{course.name}</span>
               </Link>
               ))}
-              
+
               <button
                 onClick={() => { onAddCourse(); onClose?.(); }}
-                className="w-full flex items-center gap-3 px-3 py-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all mt-1 group"
+                className="w-full flex items-center gap-3 px-4 py-3 md:py-2 md:px-3 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all mt-2 md:mt-1 group active:scale-95"
               >
-                <Plus className="w-3.5 h-3.5" />
-                <span className="text-xs font-medium">Add New Course</span>
+                <Plus className="w-4 h-4 md:w-3.5 md:h-3.5" />
+                <span className="text-sm md:text-xs font-medium">Add New Course</span>
               </button>
           </div>
         </div>

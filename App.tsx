@@ -154,14 +154,14 @@ const MainLayout: React.FC<MainLayoutProps> = (props) => {
             onClose={() => setIsSidebarOpen(false)}
           />
           <main className="flex-1 flex flex-col overflow-hidden h-full shadow-inner relative">
-            <header className="md:hidden h-14 bg-white border-b border-slate-200 flex items-center justify-between px-4 flex-shrink-0 z-30" style={{ paddingLeft: 'max(1rem, env(safe-area-inset-left))', paddingRight: 'max(1rem, env(safe-area-inset-right))', paddingTop: 'env(safe-area-inset-top)' }}>
+            <header className="md:hidden h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 flex-shrink-0 z-30" style={{ paddingLeft: 'max(1rem, env(safe-area-inset-left))', paddingRight: 'max(1rem, env(safe-area-inset-right))' }}>
                 <button
                   onClick={() => setIsSidebarOpen(true)}
-                  className="p-2 text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"
+                  className="p-3 -ml-1 text-slate-600 hover:bg-slate-50 rounded-xl transition-colors active:scale-95"
                 >
-                    <Menu className="w-6 h-6" />
+                    <Menu className="w-7 h-7" />
                 </button>
-                <div className="w-8">
+                <div className="w-10">
                     <Logo showText={false} />
                 </div>
                 <div className="w-10"></div>

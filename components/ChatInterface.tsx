@@ -238,20 +238,20 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ course, initialMessage, o
 
   return (
     <div className="flex flex-col h-full bg-slate-50 md:bg-white relative overflow-hidden">
-      <div className="flex-1 overflow-y-auto px-3 py-4 md:p-8 pb-40 md:pb-8 custom-scrollbar flex flex-col">
-        <div className="max-w-4xl mx-auto w-full space-y-4 md:space-y-6 flex-1 flex flex-col justify-end min-h-0">
-          <div className="space-y-4 md:space-y-6">
+      <div className="flex-1 overflow-y-auto px-3 py-4 md:p-8 pb-40 md:pb-8 custom-scrollbar flex flex-col" style={{ paddingLeft: 'max(0.75rem, env(safe-area-inset-left))', paddingRight: 'max(0.75rem, env(safe-area-inset-right))' }}>
+        <div className="max-w-4xl mx-auto w-full space-y-3 md:space-y-6 flex-1 flex flex-col justify-end min-h-0">
+          <div className="space-y-3 md:space-y-6">
             {messages.map((msg, idx) => (
             <div key={idx} className={`flex gap-2 md:gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                <div className={`w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                <div className={`w-8 h-8 md:w-8 md:h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                 msg.role === 'model' ? 'bg-gradient-to-br from-blue-500 to-blue-700 text-white' : 'bg-slate-200 text-slate-600'
                 }`}>
                 {msg.role === 'model' ? <Bot className="w-4 h-4 md:w-5 md:h-5" /> : <User className="w-4 h-4 md:w-5 md:h-5" />}
                 </div>
 
-                <div className={`max-w-[82%] md:max-w-[85%] rounded-2xl p-3 md:p-4 shadow-sm text-sm md:text-base ${
+                <div className={`max-w-[80%] md:max-w-[85%] rounded-2xl p-3.5 md:p-4 shadow-sm text-sm md:text-base ${
                 msg.role === 'model'
-                    ? 'bg-slate-50 border border-slate-100 text-slate-800'
+                    ? 'bg-white md:bg-slate-50 border border-slate-200 md:border-slate-100 text-slate-800'
                     : 'bg-blue-600 text-white'
                 }`}>
                 <div className="prose prose-sm max-w-none text-current font-sans overflow-x-auto katex-content">
@@ -287,10 +287,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ course, initialMessage, o
             ))}
             {isLoading && messages.length > 0 && messages[messages.length - 1].role === 'user' && (
             <div className="flex gap-2 md:gap-4">
-                <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-white flex items-center justify-center flex-shrink-0">
+                <div className="w-8 h-8 md:w-8 md:h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-white flex items-center justify-center flex-shrink-0">
                     <Sparkles className="w-4 h-4 animate-pulse" />
                 </div>
-                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-3 md:p-4">
+                <div className="bg-white md:bg-slate-50 border border-slate-200 md:border-slate-100 rounded-2xl p-3.5 md:p-4">
                     <div className="flex gap-1">
                         <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms'}}></span>
                         <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms'}}></span>
@@ -306,13 +306,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ course, initialMessage, o
 
       {/* Floating Calculator */}
       {showCalculator && (
-        <div className="fixed bottom-32 md:bottom-24 right-3 md:right-4 z-50 animate-in slide-in-from-bottom-5">
+        <div className="fixed bottom-36 md:bottom-24 right-3 md:right-4 z-50 animate-in slide-in-from-bottom-5" style={{ right: 'max(0.75rem, env(safe-area-inset-right))' }}>
             <div className="relative">
                 <button
                     onClick={() => setShowCalculator(false)}
-                    className="absolute -top-3 -right-3 bg-slate-900 text-white p-1.5 rounded-full border border-slate-700 shadow-md z-30 active:scale-95 transition-transform"
+                    className="absolute -top-3 -right-3 bg-slate-900 text-white p-2 rounded-full border border-slate-700 shadow-md z-30 active:scale-95 transition-transform"
                 >
-                    <X className="w-4 h-4" />
+                    <X className="w-5 h-5" />
                 </button>
                 <Calculator />
             </div>
@@ -321,12 +321,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ course, initialMessage, o
 
       {/* Image Preview */}
       {attachedImage && (
-          <div className="fixed md:absolute bottom-24 md:bottom-24 left-3 md:left-4 right-3 md:right-auto md:max-w-4xl z-10 animate-in slide-in-from-bottom-2">
-              <div className="bg-white p-2 rounded-xl shadow-lg border border-slate-200 inline-flex items-center gap-3">
-                  <img src={attachedImage} alt="Preview" className="h-12 w-12 object-cover rounded-lg" />
-                  <span className="text-xs text-slate-500 font-medium">Image attached</span>
-                  <button onClick={() => setAttachedImage(null)} className="p-1 hover:bg-slate-100 rounded-full text-slate-400 hover:text-red-500">
-                      <Trash2 className="w-4 h-4" />
+          <div className="fixed md:absolute bottom-28 md:bottom-24 left-3 md:left-4 right-3 md:right-auto md:max-w-4xl z-10 animate-in slide-in-from-bottom-2" style={{ left: 'max(0.75rem, env(safe-area-inset-left))', right: 'max(0.75rem, env(safe-area-inset-right))' }}>
+              <div className="bg-white p-3 rounded-xl shadow-lg border border-slate-200 inline-flex items-center gap-3">
+                  <img src={attachedImage} alt="Preview" className="h-14 w-14 object-cover rounded-lg" />
+                  <span className="text-sm text-slate-600 font-medium">Image attached</span>
+                  <button onClick={() => setAttachedImage(null)} className="p-2 hover:bg-slate-100 rounded-full text-slate-400 hover:text-red-500 active:scale-95 transition-all">
+                      <Trash2 className="w-5 h-5" />
                   </button>
               </div>
           </div>
@@ -335,10 +335,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ course, initialMessage, o
       <div
         className="fixed md:relative bottom-0 left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-slate-100 z-40 shadow-lg shadow-slate-900/5"
         style={{
-          paddingLeft: 'max(0.75rem, env(safe-area-inset-left))',
-          paddingRight: 'max(0.75rem, env(safe-area-inset-right))',
-          paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))',
-          paddingTop: '0.75rem'
+          paddingLeft: 'max(1rem, env(safe-area-inset-left))',
+          paddingRight: 'max(1rem, env(safe-area-inset-right))',
+          paddingBottom: 'max(1rem, env(safe-area-inset-bottom))',
+          paddingTop: '1rem'
         }}
       >
         <div className="max-w-4xl mx-auto relative flex gap-2 items-end">
@@ -351,7 +351,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ course, initialMessage, o
           />
           <button
              onClick={() => fileInputRef.current?.click()}
-             className={`p-2.5 md:p-3 rounded-xl md:rounded-2xl transition-all shadow-sm border flex-shrink-0 ${attachedImage ? 'bg-blue-50 text-blue-600 border-blue-200' : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50 active:scale-95'}`}
+             className={`p-3 md:p-3 rounded-xl md:rounded-2xl transition-all shadow-sm border flex-shrink-0 active:scale-95 ${attachedImage ? 'bg-blue-50 text-blue-600 border-blue-200' : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'}`}
              title="Upload Image"
           >
              <Camera className="w-5 h-5" />
@@ -363,22 +363,22 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ course, initialMessage, o
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={`Ask anything about ${course.name}...`}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl md:rounded-2xl pl-3 md:pl-4 pr-10 py-2.5 md:py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 resize-none max-h-32 shadow-inner text-sm min-h-[44px] md:min-h-[50px]"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl md:rounded-2xl pl-4 pr-12 py-3 md:py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 resize-none max-h-32 shadow-inner text-sm min-h-[50px] md:min-h-[50px]"
                 rows={1}
             />
             <button
                 onClick={() => setShowCalculator(!showCalculator)}
-                className={`absolute right-2 bottom-2 p-1.5 rounded-lg transition-all active:scale-95 ${showCalculator ? 'text-blue-600 bg-blue-50' : 'text-slate-400 hover:bg-slate-200'}`}
+                className={`absolute right-2 bottom-2 p-2 rounded-lg transition-all active:scale-95 ${showCalculator ? 'text-blue-600 bg-blue-50' : 'text-slate-400 hover:bg-slate-200'}`}
                 title="Toggle Calculator"
             >
-                <CalcIcon className="w-4 h-4" />
+                <CalcIcon className="w-5 h-5" />
             </button>
           </div>
 
           <button
                 onClick={() => handleSend()}
                 disabled={(!input.trim() && !attachedImage) || isLoading}
-                className="p-2.5 md:p-3 bg-blue-600 text-white rounded-xl md:rounded-2xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md flex-shrink-0 active:scale-95"
+                className="p-3 md:p-3 bg-blue-600 text-white rounded-xl md:rounded-2xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md flex-shrink-0 active:scale-95"
             >
                 <Send className="w-5 h-5" />
             </button>

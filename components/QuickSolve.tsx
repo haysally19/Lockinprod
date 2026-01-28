@@ -255,32 +255,32 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
         {/* Header */}
         <div className="flex items-center justify-between p-4 bg-slate-900/50 backdrop-blur-sm border-b border-slate-700/50" style={{ paddingLeft: 'max(1rem, env(safe-area-inset-left))', paddingRight: 'max(1rem, env(safe-area-inset-right))' }}>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-              <Zap className="w-5 h-5 text-white" />
+            <div className="w-11 h-11 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Zap className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-white font-bold text-lg">Quick Solve</h1>
+              <h1 className="text-white font-bold text-lg md:text-xl">Quick Solve</h1>
               <p className="text-slate-400 text-xs">Get answers instantly</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={openHistory}
-              className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+              className="p-2.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors active:scale-95"
             >
-              <History className="w-5 h-5" />
+              <History className="w-6 h-6" />
             </button>
             <button
               onClick={onNavigateToDashboard}
-              className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+              className="p-2.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors active:scale-95"
             >
-              <BookOpen className="w-5 h-5" />
+              <BookOpen className="w-6 h-6" />
             </button>
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="flex-1 overflow-y-auto p-4 space-y-4" style={{ paddingLeft: 'max(1rem, env(safe-area-inset-left))', paddingRight: 'max(1rem, env(safe-area-inset-right))', paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
 
           {!selectedImage && (
             <div className="space-y-4">
@@ -295,16 +295,16 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
               <div className="flex gap-3">
                 <button
                   onClick={capturePhoto}
-                  className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-4 rounded-xl font-bold transition-all active:scale-95 flex items-center justify-center gap-2"
+                  className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-5 rounded-xl font-bold transition-all active:scale-95 flex items-center justify-center gap-2 text-base shadow-lg"
                 >
-                  <Camera className="w-5 h-5" />
+                  <Camera className="w-6 h-6" />
                   Capture
                 </button>
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="px-6 py-4 bg-slate-800 hover:bg-slate-700 text-white rounded-xl transition-all flex items-center justify-center gap-2"
+                  className="px-6 py-5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl transition-all flex items-center justify-center gap-2 active:scale-95 shadow-lg"
                 >
-                  <Upload className="w-5 h-5" />
+                  <Upload className="w-6 h-6" />
                 </button>
               </div>
             </div>
@@ -324,9 +324,9 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
                 <img src={selectedImage} alt="Problem" className="w-full h-auto" />
                 <button
                   onClick={reset}
-                  className="absolute top-3 right-3 p-2 bg-slate-900/80 hover:bg-slate-900 backdrop-blur-sm text-white rounded-lg transition-all"
+                  className="absolute top-3 right-3 p-3 bg-slate-900/80 hover:bg-slate-900 backdrop-blur-sm text-white rounded-xl transition-all active:scale-95 shadow-lg"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-5 h-5" />
                 </button>
               </div>
 
@@ -361,16 +361,16 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
                   <button
                     onClick={handleSolve}
                     disabled={isAnalyzing}
-                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-slate-700 disabled:to-slate-700 text-white px-6 py-4 rounded-xl font-bold text-lg shadow-2xl shadow-blue-500/30 transition-all active:scale-95 flex items-center justify-center gap-3 disabled:cursor-not-allowed"
+                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-slate-700 disabled:to-slate-700 text-white px-6 py-5 rounded-xl font-bold text-lg shadow-2xl shadow-blue-500/30 transition-all active:scale-95 flex items-center justify-center gap-3 disabled:cursor-not-allowed"
                   >
                     {isAnalyzing ? (
                       <>
-                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                         Analyzing...
                       </>
                     ) : (
                       <>
-                        <Sparkles className="w-5 h-5" />
+                        <Sparkles className="w-6 h-6" />
                         Solve It
                       </>
                     )}

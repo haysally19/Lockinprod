@@ -43,43 +43,43 @@ const AddCourseModal: React.FC<AddCourseModalProps> = ({ isOpen, onClose, onAdd 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 border border-slate-200/50">
-        <div className="p-5 border-b border-slate-100 flex justify-between items-center">
+    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center md:p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-white rounded-t-3xl md:rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in slide-in-from-bottom md:zoom-in-95 duration-200 border-t md:border border-slate-200/50" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+        <div className="p-5 md:p-5 border-b border-slate-100 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
-              <BookOpen className="w-5 h-5 text-slate-500"/>
+            <div className="w-11 h-11 md:w-10 md:h-10 rounded-xl bg-slate-100 flex items-center justify-center">
+              <BookOpen className="w-6 h-6 md:w-5 md:h-5 text-slate-500"/>
             </div>
             <div>
-              <h3 className="font-bold text-slate-800 text-lg">Add New Course</h3>
+              <h3 className="font-bold text-slate-800 text-xl md:text-lg">Add New Course</h3>
               <p className="text-sm text-slate-500">Expand your learning workspace.</p>
             </div>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 p-1.5 hover:bg-slate-100 rounded-full transition-all">
-            <X className="w-5 h-5" />
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 p-2.5 md:p-1.5 hover:bg-slate-100 rounded-full transition-all active:scale-95">
+            <X className="w-6 h-6 md:w-5 md:h-5" />
           </button>
         </div>
-        
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+
+        <form onSubmit={handleSubmit} className="p-5 md:p-6 space-y-5 md:space-y-6">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5 ml-1">Course Name</label>
-            <input 
-              type="text" 
+            <label className="block text-sm md:text-sm font-bold text-slate-700 mb-2 ml-1">Course Name</label>
+            <input
+              type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Organic Chemistry II"
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition-all"
+              className="w-full px-5 py-4 md:px-4 md:py-3 rounded-xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition-all text-base"
               autoFocus
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5 ml-1">Subject</label>
-            <select 
+            <label className="block text-sm md:text-sm font-bold text-slate-700 mb-2 ml-1">Subject</label>
+            <select
               value={subject}
               onChange={(e) => setSubject(e.target.value as ClassSubject)}
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition-all"
+              className="w-full px-5 py-4 md:px-4 md:py-3 rounded-xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition-all text-base"
             >
               {Object.values(ClassSubject).map(sub => (
                 <option key={sub} value={sub}>{sub}</option>
@@ -88,25 +88,25 @@ const AddCourseModal: React.FC<AddCourseModalProps> = ({ isOpen, onClose, onAdd 
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2 ml-1">Theme Color</label>
-            <div className="flex flex-wrap gap-3 p-1">
+            <label className="block text-sm md:text-sm font-bold text-slate-700 mb-3 ml-1">Theme Color</label>
+            <div className="flex flex-wrap gap-4 md:gap-3 p-1">
               {COLORS.map(color => (
                 <button
                   key={color}
                   type="button"
                   onClick={() => setSelectedColor(color)}
-                  className={`w-9 h-9 rounded-full ${color} flex items-center justify-center transition-transform hover:scale-110 ring-offset-2 ring-white ${selectedColor === color ? 'ring-2 ring-blue-500 scale-110' : ''}`}
+                  className={`w-12 h-12 md:w-9 md:h-9 rounded-full ${color} flex items-center justify-center transition-transform active:scale-95 hover:scale-110 ring-offset-2 ring-white ${selectedColor === color ? 'ring-2 ring-blue-500 scale-110' : ''}`}
                 >
-                  {selectedColor === color && <Check className="w-5 h-5 text-white" />}
+                  {selectedColor === color && <Check className="w-6 h-6 md:w-5 md:h-5 text-white" />}
                 </button>
               ))}
             </div>
           </div>
 
           <div className="pt-2">
-            <button 
+            <button
               type="submit"
-              className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl shadow-lg shadow-slate-900/20 transition-all active:scale-[0.98]"
+              className="w-full py-5 md:py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-base shadow-lg shadow-slate-900/20 transition-all active:scale-[0.98]"
             >
               Create Course
             </button>
