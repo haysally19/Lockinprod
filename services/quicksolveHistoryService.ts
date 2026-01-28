@@ -30,9 +30,10 @@ export const saveQuickSolveHistory = async (
     explanation_mode: explanationMode
   };
 
-  if (courseId) {
-    insertData.course_id = courseId;
-  }
+  // TODO: Uncomment when course_id column is added to quicksolve_history table
+  // if (courseId) {
+  //   insertData.course_id = courseId;
+  // }
 
   const { data, error } = await supabase
     .from('quicksolve_history')

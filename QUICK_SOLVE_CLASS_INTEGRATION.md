@@ -1,8 +1,16 @@
 # Quick Solve Class Integration - Implementation Summary
 
+## Current Status: ⚠️ Feature Implemented but Disabled
+
+**Quick Solve is working normally** - Students can capture and solve problems without issues.
+
+**Flashcard save feature is disabled** - The feature code is complete but commented out until the required database tables are created. See `ENABLE_FLASHCARD_FEATURE.md` for instructions on enabling it.
+
 ## Overview
 
-Quick Solve problems can now be linked to specific classes and saved as flashcards for later review. When users solve problems within a class context, they can save the problem and solution as a flashcard deck to study from.
+Quick Solve problems can be linked to specific classes and saved as flashcards for later review. When users solve problems within a class context, they can save the problem and solution as a flashcard deck to study from.
+
+This feature is **ready to use** once database migrations are applied.
 
 ## What's Implemented
 

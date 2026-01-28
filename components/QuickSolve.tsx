@@ -485,7 +485,8 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
                   )}
 
                   <div className="space-y-3">
-                    {courseId && courseName && (
+                    {/* TODO: Uncomment when database tables are created */}
+                    {/* {courseId && courseName && (
                       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4">
                         <div className="flex items-center justify-between mb-3">
                           <div>
@@ -518,7 +519,7 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
                           </button>
                         )}
                       </div>
-                    )}
+                    )} */}
                     <button
                       onClick={() => setShowFeedback(true)}
                       className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2"
