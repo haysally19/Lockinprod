@@ -292,20 +292,20 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="flex gap-3">
-                <button
-                  onClick={capturePhoto}
-                  className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-5 rounded-xl font-bold transition-all active:scale-95 flex items-center justify-center gap-2 text-base shadow-lg"
-                >
-                  <Camera className="w-6 h-6" />
-                  Take Photo
-                </button>
+              <div className="flex items-center justify-center gap-8 py-4">
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="px-6 py-5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl transition-all flex items-center justify-center gap-2 active:scale-95 shadow-lg"
+                  className="w-12 h-12 bg-slate-800/80 hover:bg-slate-700 text-white rounded-full transition-all flex items-center justify-center active:scale-95 shadow-lg border-2 border-slate-600"
                 >
-                  <Upload className="w-6 h-6" />
+                  <Upload className="w-5 h-5" />
                 </button>
+                <button
+                  onClick={capturePhoto}
+                  className="w-20 h-20 bg-white rounded-full transition-all active:scale-95 flex items-center justify-center shadow-2xl border-4 border-slate-300 hover:border-slate-400"
+                >
+                  <div className="w-16 h-16 bg-white rounded-full border-2 border-slate-900"></div>
+                </button>
+                <div className="w-12 h-12"></div>
               </div>
             </div>
           )}
