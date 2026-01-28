@@ -280,16 +280,16 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4" style={{ paddingLeft: 'max(1rem, env(safe-area-inset-left))', paddingRight: 'max(1rem, env(safe-area-inset-right))', paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
+        <div className="flex-1 overflow-y-auto p-4 flex flex-col" style={{ paddingLeft: 'max(1rem, env(safe-area-inset-left))', paddingRight: 'max(1rem, env(safe-area-inset-right))', paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
 
           {!selectedImage && (
-            <div className="space-y-4">
-              <div className="relative rounded-2xl overflow-hidden bg-black">
+            <div className="space-y-4 flex-1 flex flex-col">
+              <div className="relative rounded-2xl overflow-hidden bg-black flex-1 min-h-[60vh] md:min-h-[400px]">
                 <video
                   ref={videoRef}
                   autoPlay
                   playsInline
-                  className="w-full h-auto"
+                  className="w-full h-full object-cover"
                 />
               </div>
               <div className="flex gap-3">
@@ -298,7 +298,7 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
                   className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-5 rounded-xl font-bold transition-all active:scale-95 flex items-center justify-center gap-2 text-base shadow-lg"
                 >
                   <Camera className="w-6 h-6" />
-                  Capture
+                  Take Photo
                 </button>
                 <button
                   onClick={() => fileInputRef.current?.click()}
