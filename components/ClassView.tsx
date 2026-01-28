@@ -2,13 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Course, TabView, Note, CourseDocument } from '../types';
-import { MessageSquare, FileText, GraduationCap, Files, Layout, BrainCircuit } from 'lucide-react';
+import { MessageSquare, FileText, GraduationCap, Files, BrainCircuit, Zap } from 'lucide-react';
 import ChatInterface from './ChatInterface';
 import EssayGrader from './EssayGrader';
 import NotesModule from './NotesModule';
 import DocsModule from './DocsModule';
-import ClassOverview from './ClassOverview';
 import StudyCenter from './StudyCenter';
+import QuickSolve from './QuickSolve';
 
 interface ClassViewProps {
   course: Course;
@@ -32,7 +32,9 @@ const ClassView: React.FC<ClassViewProps> = ({
   onDeleteDoc
 }) => {
   const location = useLocation();
-  const [activeTab, setActiveTab] = useState<TabView>('overview');
+  const isMobile = window.innerWidth < 768;
+  const defaultTab = isMobile ? 'quicksolve' : 'chat';
+  const [activeTab, setActiveTab] = useState<TabView>(defaultTab);
   const [initialChatQuery, setInitialChatQuery] = useState<string>('');
 
   useEffect(() => {
@@ -41,15 +43,23 @@ const ClassView: React.FC<ClassViewProps> = ({
     }
   }, [location.state]);
 
+  const mobileFirstTabs: { id: TabView; label: string; icon: any }[] = [
+    { id: 'quicksolve', label: 'Quick Solve', icon: Zap },
+    { id: 'study', label: 'Study', icon: BrainCircuit },
+    { id: 'grader', label: 'Grader', icon: GraduationCap },
+    { id: 'notes', label: 'Notes', icon: FileText },
+    { id: 'docs', label: 'Library', icon: Files },
+  ];
 
-  const tabs: { id: TabView; label: string; icon: any }[] = [
-    { id: 'overview', label: 'Overview', icon: Layout },
+  const desktopFirstTabs: { id: TabView; label: string; icon: any }[] = [
     { id: 'chat', label: 'AI Tutor', icon: MessageSquare },
     { id: 'study', label: 'Study', icon: BrainCircuit },
     { id: 'grader', label: 'Grader', icon: GraduationCap },
     { id: 'notes', label: 'Notes', icon: FileText },
     { id: 'docs', label: 'Library', icon: Files },
   ];
+
+  const tabs = isMobile ? mobileFirstTabs : desktopFirstTabs;
 
   const handleAskAI = (question: string) => {
     setInitialChatQuery(question);
@@ -102,43 +112,32 @@ const ClassView: React.FC<ClassViewProps> = ({
       {/* Main Content View with Animation Container */}
       <div className="flex-1 overflow-hidden relative">
         <div className="h-full w-full animate-in fade-in duration-300">
-            {activeTab === 'overview' && (
-            <ClassOverview 
-                course={course} 
-                onNavigate={setActiveTab} 
-                onAskAI={handleAskAI}
-            />
-            )}
-
-            {activeTab === 'study' && (
-            <StudyCenter 
-                course={course} 
+            {activeTab === 'quicksolve' && (
+            <QuickSolve
                 checkTokenLimit={checkTokenLimit}
                 incrementTokenUsage={incrementTokenUsage}
+                onNavigateToDashboard={() => {}}
             />
             )}
 
             {activeTab === 'chat' && (
-            <ChatInterface 
-                course={course} 
+            <ChatInterface
+                course={course}
                 initialMessage={initialChatQuery}
                 onClearInitialMessage={() => setInitialChatQuery('')}
                 checkTokenLimit={checkTokenLimit}
                 incrementTokenUsage={incrementTokenUsage}
             />
             )}
-            
-            {activeTab === 'notes' && (
-            <NotesModule 
-                notes={course.notes} 
-                onAddNote={(n) => onAddNote(course.id, n)}
-                onUpdateNote={onUpdateNote}
-                onDeleteNote={onDeleteNote}
+
+            {activeTab === 'study' && (
+            <StudyCenter
+                course={course}
                 checkTokenLimit={checkTokenLimit}
                 incrementTokenUsage={incrementTokenUsage}
             />
             )}
-            
+
             {activeTab === 'grader' && (
             <EssayGrader
                 course={course}
@@ -147,8 +146,19 @@ const ClassView: React.FC<ClassViewProps> = ({
             />
             )}
 
+            {activeTab === 'notes' && (
+            <NotesModule
+                notes={course.notes}
+                onAddNote={(n) => onAddNote(course.id, n)}
+                onUpdateNote={onUpdateNote}
+                onDeleteNote={onDeleteNote}
+                checkTokenLimit={checkTokenLimit}
+                incrementTokenUsage={incrementTokenUsage}
+            />
+            )}
+
             {activeTab === 'docs' && (
-            <DocsModule 
+            <DocsModule
                 documents={course.documents || []}
                 onAddDoc={(d) => onAddDoc(course.id, d)}
                 onDeleteDoc={onDeleteDoc}
