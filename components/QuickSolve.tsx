@@ -283,7 +283,7 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
         <div className="flex-1 overflow-y-auto p-4 flex flex-col" style={{ paddingLeft: 'max(1rem, env(safe-area-inset-left))', paddingRight: 'max(1rem, env(safe-area-inset-right))', paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
 
           {!selectedImage && (
-            <div className="space-y-4 flex-1 flex flex-col">
+            <div className="flex-1 flex flex-col">
               <div className="relative rounded-2xl overflow-hidden bg-black flex-1 min-h-[60vh] md:min-h-[400px]">
                 <video
                   ref={videoRef}
@@ -291,21 +291,24 @@ const QuickSolve: React.FC<QuickSolveProps> = ({ checkTokenLimit, incrementToken
                   playsInline
                   className="w-full h-full object-cover"
                 />
-              </div>
-              <div className="flex items-center justify-center gap-8 py-4">
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-12 h-12 bg-slate-800/80 hover:bg-slate-700 text-white rounded-full transition-all flex items-center justify-center active:scale-95 shadow-lg border-2 border-slate-600"
-                >
-                  <Upload className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={capturePhoto}
-                  className="w-20 h-20 bg-white rounded-full transition-all active:scale-95 flex items-center justify-center shadow-2xl border-4 border-slate-300 hover:border-slate-400"
-                >
-                  <div className="w-16 h-16 bg-white rounded-full border-2 border-slate-900"></div>
-                </button>
-                <div className="w-12 h-12"></div>
+                {/* iPhone-style overlay controls */}
+                <div className="absolute bottom-0 left-0 right-0 pb-8 pt-20 bg-gradient-to-t from-black/60 to-transparent">
+                  <div className="flex items-center justify-center gap-8 px-4">
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      className="w-12 h-12 bg-white/20 backdrop-blur-md hover:bg-white/30 text-white rounded-full transition-all flex items-center justify-center active:scale-95 shadow-lg border-2 border-white/40"
+                    >
+                      <Upload className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={capturePhoto}
+                      className="w-20 h-20 bg-white rounded-full transition-all active:scale-95 flex items-center justify-center shadow-2xl border-4 border-white/50"
+                    >
+                      <div className="w-16 h-16 bg-white rounded-full border-2 border-slate-900"></div>
+                    </button>
+                    <div className="w-12 h-12"></div>
+                  </div>
+                </div>
               </div>
             </div>
           )}
