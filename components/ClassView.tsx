@@ -47,7 +47,6 @@ const ClassView: React.FC<ClassViewProps> = ({
 
   const desktopFirstTabs: { id: TabView; label: string; icon: any }[] = [
     { id: 'chat', label: 'AI Tutor', icon: MessageSquare },
-    { id: 'quicksolve', label: 'Quick Solve', icon: Zap },
     { id: 'study', label: 'Study', icon: BrainCircuit },
     { id: 'grader', label: 'Grader', icon: GraduationCap },
     { id: 'notes', label: 'Notes', icon: FileText },
